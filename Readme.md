@@ -1,7 +1,7 @@
 # Личный проект «Большое путешествие» [![Build status][travis-image]][travis-url]
 
 * Студент: [Роман Бондаренко](https://up.htmlacademy.ru/ecmascript/11/user/350991).
-* Наставник: `Неизвестно`.
+* Наставник: [Сергей Глазков](https://up.htmlacademy.ru/ecmascript/11/user/1194253).
 
 ---
 
