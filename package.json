@@ -13,8 +13,5 @@
   },
   "engines": {
     "node": "10"
-  },
-  "dependencies": {
-    "eslint-utils": "^2.0.0"
   }
 }
