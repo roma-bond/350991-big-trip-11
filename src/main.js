@@ -321,28 +321,27 @@ const render = (container, markup, place) => {
   container.insertAdjacentHTML(place, markup);
 };
 
-const tripMainElement = document.querySelector('.trip-main');
+const tripMainElement = document.querySelector(`.trip-main`);
 render(tripMainElement, getInfoMarkup(), `afterbegin`);
 
-const tripInfoElement = document.querySelector('.trip-info__main');
+const tripInfoElement = document.querySelector(`.trip-info__main`);
 render(tripInfoElement, getPriceMarkup(), `afterend`);
 
-const tripControlHeadingElements = document.querySelectorAll('.trip-controls h2');
+const tripControlHeadingElements = document.querySelectorAll(`.trip-controls h2`);
 const menuHeadingElement = tripControlHeadingElements[0];
 const filtersHeadingElement = tripControlHeadingElements[1];
 render(menuHeadingElement, getMenuMarkup(), `afterend`);
 
 render(filtersHeadingElement, getFiltersMarkup(), `afterend`);
 
-const tripEventsElement = document.querySelector('.trip-events');
+const tripEventsElement = document.querySelector(`.trip-events`);
 render(tripEventsElement, getSortEventsMarkup(), `beforeend`);
 
 render(tripEventsElement, getEventEditMarkup(), `beforeend`);
 
 render(tripEventsElement, getDaysListMarkup(), `beforeend`);
-const tripDaysElements = document.querySelectorAll('.trip-days');
 render(tripEventsElement, getDayMarkup(), `beforeend`);
-const tripDayEventsList = document.querySelector('.trip-events__list');
+const tripDayEventsList = document.querySelector(`.trip-events__list`);
 for (let i = 0; i < EVENT_COUNT; i++) {
   render(tripDayEventsList, getEventMarkup(), `beforeend`);
 }
