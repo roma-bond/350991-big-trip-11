@@ -8,7 +8,7 @@ const generateEvent = () => {
     type,
     time: getRandomTime(),
     price: getRandomPrice(),
-    offers: getRandomArrayItems(offersToType[type], 3),
+    offers: getRandomArrayItems(offersToType[type.type], 3),
     destination: getRandomArrayItem(CITIES),
     destinationInfo: {info: getRandomArrayItems(INFO, 5), photos: getRandomInteger(0, 3)}
   };

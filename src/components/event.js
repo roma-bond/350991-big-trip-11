@@ -1,45 +1,4 @@
-const getDuration = (time) => {
-  const startDay = parseInt(time.start.split(` `)[0].split(`/`)[0], 10);
-  const endDay = parseInt(time.end.split(` `)[0].split(`/`)[0], 10);
-  let dayDiff = endDay - startDay;
-  const startHour = parseInt(time.start.split(` `)[1].split(`:`)[0], 10);
-  const endHour = parseInt(time.end.split(` `)[1].split(`:`)[0], 10);
-  let hourDiff;
-  if (endHour > startHour) {
-    hourDiff = endHour - startHour;
-  } else {
-    dayDiff--;
-    hourDiff = 24 + endHour - startHour;
-  }
-  const startMin = parseInt(time.start.split(` `)[1].split(`:`)[1], 10);
-  const endMin = parseInt(time.end.split(` `)[1].split(`:`)[1], 10);
-  let minDiff;
-  if (endMin > startMin) {
-    minDiff = endMin - startMin;
-  } else {
-    minDiff = 60 + endMin - startMin;
-    hourDiff--;
-    dayDiff = (hourDiff < 0) ? --dayDiff : dayDiff;
-  }
-
-  dayDiff = (dayDiff > 0) ? `0${dayDiff}D ` : ``;
-  if (hourDiff === 0) {
-    hourDiff = ``;
-  } else if (hourDiff < 10) {
-    hourDiff = `0${hourDiff}H `;
-  } else {
-    hourDiff = `${hourDiff}H `;
-  }
-  if (minDiff === 0) {
-    minDiff = `00M`;
-  } else if (minDiff < 10) {
-    minDiff = `0${minDiff}M`;
-  } else {
-    minDiff = `${minDiff}M`;
-  }
-
-  return `${dayDiff}${hourDiff}${minDiff}`;
-};
+import {getDuration, getDateString} from '../utils/common.js';
 
 const getOffersMarkup = (offers) => {
   return offers
@@ -56,30 +15,30 @@ const getOffersMarkup = (offers) => {
 };
 
 const getEventMarkup = (event) => {
-  const eventType = (event.type !== `Check`) ? event.type : `Check-in`;
+  const eventType = (event.type.type !== `Check`) ? event.type.type : `Check-in`;
 
-  const activityTypes = new Set([`Check`, `Sightseeing`, `Restaurant`]);
-  const title = (activityTypes.has(event.type)) ? `${eventType} in ${event.destination}` : `${eventType} to ${event.destination}`;
+  const title = (event.type.group === `Activity`) ? `${eventType} in ${event.destination}` : `${eventType} to ${event.destination}`;
 
   const offersMarkup = getOffersMarkup(event.offers);
-
-  const start = event.time.start.split(` `)[1];
-  const end = event.time.end.split(` `)[1];
+  const startDate = getDateString(event.time.start);
+  const startTime = event.time.start.toString().slice(16, 21);
+  const endDate = getDateString(event.time.end);
+  const endTime = event.time.end.toString().slice(16, 21);
   const duration = getDuration(event.time);
 
   return (
     `<li class="trip-events__item">
       <div class="event">
         <div class="event__type">
-          <img class="event__type-icon" width="42" height="42" src="img/icons/${eventType.toLowerCase()}.png" alt="Event type icon">
+          <img class="event__type-icon" width="42" height="42" src="img/icons/${eventType.toLowerCase()}.png" alt="${eventType} icon">
         </div>
         <h3 class="event__title">${title}</h3>
 
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="2019-03-19T10:00">${start}</time>
+            <time class="event__start-time" datetime="${startDate}T${startTime}">${startTime}</time>
             &mdash;
-            <time class="event__end-time" datetime="2019-03-19T11:00">${end}</time>
+            <time class="event__end-time" datetime="${endDate}T${endTime}">${endTime}</time>
           </p>
           <p class="event__duration">${duration}</p>
         </div>

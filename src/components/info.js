@@ -1,5 +1,3 @@
-import {integerToMonth} from '../mock/const.js';
-
 const getRoute = (events) => {
   let cities = [];
   events.forEach((eventsGroup) => {
@@ -14,20 +12,20 @@ const getRoute = (events) => {
 };
 
 const getInfoMarkup = (sortedEvents) => {
-  let events = sortedEvents.slice();
-  const startDate = events[0].date;
-  const startDay = startDate.split(`/`)[0];
-  const startMonth = integerToMonth[startDate.split(`/`)[1]];
+  let sorted = sortedEvents.slice();
+  const startDate = sorted[0].date;
+  const startDay = startDate.split(` `)[1];
+  const startMonth = startDate.split(` `)[0];
   const start = `${startMonth} ${startDay}`;
 
-  const endDate = events[events.length - 1].events.pop().time.end.split(` `)[0];
-  const endDay = endDate.split(`/`)[0];
-  const endMonth = integerToMonth[endDate.split(`/`)[1]];
+  const endDate = sorted[sorted.length - 1].events.pop().time.end;
+  const endDay = endDate.toString().split(` `)[2];
+  const endMonth = endDate.toString().split(` `)[1];
   const end = (startMonth === endMonth) ? `${endDay}` : `${endMonth} ${endDay}`;
   return (
     `<section class="trip-main__trip-info  trip-info">
       <div class="trip-info__main">
-        <h1 class="trip-info__title">${getRoute(events)}</h1>
+        <h1 class="trip-info__title">${getRoute(sortedEvents)}</h1>
         <p class="trip-info__dates">${start}&nbsp;&mdash;&nbsp;${end}</p>
       </div>
     </section>`

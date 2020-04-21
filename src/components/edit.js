@@ -1,4 +1,49 @@
 import {getRandomBoolean} from '../utils/common.js';
+import {EVENT_TYPES, CITIES} from '../mock/const.js';
+
+const getTypeGroups = (types) => {
+  const groups = types.map((type) => type.group);
+  return groups.filter((group, i) => {
+    return groups.indexOf(group) === i;
+  });
+};
+
+const getTypesMarkup = (group, types) => {
+  const allTransferTypes = types.filter((type) => {
+    return type.group === group;
+  });
+  const uniqueTransferTypes = allTransferTypes.filter(function (type, i) {
+    return allTransferTypes.indexOf(type) === i;
+  });
+
+  return uniqueTransferTypes
+    .map((type) => {
+      return (
+        `<div class="event__type-item">
+          <input id="event-type-${type.type.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type.type.toLowerCase()}">
+          <label class="event__type-label  event__type-label--${type.type.toLowerCase()}" for="event-type-${type.type.toLowerCase()}-1">${type}</label>
+        </div>`
+      );
+    }).join(`\n`);
+};
+
+const getEventTypesListMarkup = (types) => {
+  const typeGroups = getTypeGroups(types);
+  return typeGroups.map((group) => {
+    return (
+      `<fieldset class="event__type-group">
+        <legend class="visually-hidden">${group}</legend>
+        ${getTypesMarkup(group, types)}
+      </fieldset>`
+    );
+  }).join(`\n`);
+};
+
+const getEventDestinationListMarkup = (cities) => {
+  return cities.map((city) => {
+    return `<option value="${city}"></option>`;
+  }).join(`\n`);
+};
 
 const getOffersMarkup = (offers) => {
   return offers
@@ -28,10 +73,9 @@ const getDestinationPhotosMarkup = (photos) => {
 
 const getEventEditMarkup = (sortedEvent) => {
   const event = sortedEvent.events[0];
-  const eventType = (event.type !== `Check`) ? event.type : `Check-in`;
+  const eventType = (event.type.type !== `Check`) ? event.type.type : `Check-in`;
 
-  const activityTypes = new Set([`Check`, `Sightseeing`, `Restaurant`]);
-  const title = (activityTypes.has(event.type)) ? `${eventType} in` : `${eventType} to`;
+  const title = (event.type.group === `Activity`) ? `${eventType} in` : `${eventType} to`;
 
   const offersMarkup = getOffersMarkup(event.offers);
   const destinationPhotosMarkup = getDestinationPhotosMarkup(event.destinationInfo.photos);
@@ -42,68 +86,11 @@ const getEventEditMarkup = (sortedEvent) => {
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
             <span class="visually-hidden">Choose event type</span>
-            <img class="event__type-icon" width="17" height="17" src="img/icons/${eventType.toLowerCase()}.png" alt="Event type icon">
+            <img class="event__type-icon" width="17" height="17" src="img/icons/${eventType.toLowerCase()}.png" alt="${eventType} icon">
           </label>
           <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
-
           <div class="event__type-list">
-            <fieldset class="event__type-group">
-              <legend class="visually-hidden">Transfer</legend>
-
-              <div class="event__type-item">
-                <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi">
-                <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-1">Taxi</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus">
-                <label class="event__type-label  event__type-label--bus" for="event-type-bus-1">Bus</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train">
-                <label class="event__type-label  event__type-label--train" for="event-type-train-1">Train</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship">
-                <label class="event__type-label  event__type-label--ship" for="event-type-ship-1">Ship</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-transport-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="transport">
-                <label class="event__type-label  event__type-label--transport" for="event-type-transport-1">Transport</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive">
-                <label class="event__type-label  event__type-label--drive" for="event-type-drive-1">Drive</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" checked>
-                <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
-              </div>
-            </fieldset>
-
-            <fieldset class="event__type-group">
-              <legend class="visually-hidden">Activity</legend>
-
-              <div class="event__type-item">
-                <input id="event-type-check-in-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="check-in">
-                <label class="event__type-label  event__type-label--check-in" for="event-type-check-in-1">Check-in</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing">
-                <label class="event__type-label  event__type-label--sightseeing" for="event-type-sightseeing-1">Sightseeing</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant">
-                <label class="event__type-label  event__type-label--restaurant" for="event-type-restaurant-1">Restaurant</label>
-              </div>
-            </fieldset>
+            ${getEventTypesListMarkup(EVENT_TYPES)}
           </div>
         </div>
 
@@ -113,10 +100,7 @@ const getEventEditMarkup = (sortedEvent) => {
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${event.destination}" list="destination-list-1">
           <datalist id="destination-list-1">
-            <option value="Amsterdam"></option>
-            <option value="Geneva"></option>
-            <option value="Chamonix"></option>
-            <option value="Saint Petersburg"></option>
+            ${getEventDestinationListMarkup(CITIES)}
           </datalist>
         </div>
 

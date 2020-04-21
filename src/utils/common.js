@@ -1,28 +1,54 @@
+const getDuration = (time) => {
+  const diff = new Date(time.end - time.start);
+  let dayDiff = diff.getDate();
+  let hourDiff = diff.getHours();
+  let minDiff = diff.getMinutes();
+
+  dayDiff = (dayDiff > 0) ? `0${dayDiff}D ` : ``;
+  if (hourDiff === 0) {
+    hourDiff = ``;
+  } else if (hourDiff < 10) {
+    hourDiff = `0${hourDiff}H `;
+  } else {
+    hourDiff = `${hourDiff}H `;
+  }
+  if (minDiff === 0) {
+    minDiff = `00M`;
+  } else if (minDiff < 10) {
+    minDiff = `0${minDiff}M`;
+  } else {
+    minDiff = `${minDiff}M`;
+  }
+
+  return `${dayDiff}${hourDiff}${minDiff}`;
+};
+
+const castTimeFormat = (value) => value < 10 ? `0${value}` : String(value);
+
+const getDay = (month, year) => {
+  const DAYS_PER_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  return ((month === 2) && (year % 4 === 0)) ? DAYS_PER_MONTH[month - 1] + 1 : DAYS_PER_MONTH[month - 1];
+};
+
+const getDateString = (date) => {
+  const year = date.getFullYear();
+  const month = castTimeFormat(date.getMonth() + 1);
+  const day = castTimeFormat(date.getDate());
+
+  return `${year}-${month}-${day}`;
+};
+
 const getRandomTime = () => {
-  const startDay = getRandomInteger(1, 28);
-  const endDay = startDay + getRandomInteger(0, 2);
+  const FORTNIGHT = 1209600000; // 2 weeks in milliseconds
+  const year = getRandomInteger(2019, 2020);
+  const month = getRandomInteger(1, 12);
+  const day = getDay(month, year);
+  const hour = getRandomInteger(0, 23);
+  const min = getRandomInteger(0, 59);
 
-  let startHour = getRandomInteger(0, 23);
-  let endHour = getRandomInteger(0, 23);
-
-  if ((startDay === endDay) && (startHour > endHour)) {
-    [startHour, endHour] = [endHour, startHour];
-  }
-
-  let startMin = getRandomInteger(0, 59);
-  let endMin = getRandomInteger(0, 59);
-
-  if ((startDay === endDay) && (startHour === endHour) && (startMin > endMin)) {
-    [startMin, endMin] = [endMin, startMin];
-  }
-
-  startHour = (startHour < 10) ? `0${startHour}` : `${startHour}`;
-  endHour = (endHour < 10) ? `0${endHour}` : `${endHour}`;
-  startMin = (startMin < 10) ? `0${startMin}` : `${startMin}`;
-  endMin = (endMin < 10) ? `0${endMin}` : `${endMin}`;
-
-  const start = `${startDay}/06/2020 ${startHour}:${startMin}`;
-  const end = `${endDay}/06/2020 ${endHour}:${endMin}`;
+  const end = new Date(year, month, day, hour, min);
+  const elapsed = getRandomInteger(0, FORTNIGHT);
+  const start = new Date(end - elapsed);
 
   return {start, end};
 };
@@ -34,7 +60,7 @@ const getRandomInteger = (min, max) => {
 
 const getRandomPrice = () => getRandomInteger(1, 50) * 10;
 
-const getRandomBoolean = () => Math.random() > 0.5 ? true : false;
+const getRandomBoolean = () => Math.random() > 0.5;
 
 const getRandomArrayItem = (array) => {
   const randomIndex = getRandomInteger(0, array.length - 1);
@@ -54,4 +80,4 @@ const getRandomArrayItems = function (array, max) {
   return selection;
 };
 
-export {getRandomTime, getRandomInteger, getRandomPrice, getRandomArrayItem, getRandomArrayItems, getRandomBoolean};
+export {getDuration, getDateString, getRandomTime, getRandomInteger, getRandomPrice, getRandomArrayItem, getRandomArrayItems, getRandomBoolean};
