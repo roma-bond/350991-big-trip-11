@@ -1,7 +1,10 @@
+import {integerToMonth} from '../mock/const.js';
+import {castTimeFormat} from '../utils/common.js';
+
 const getDayMarkup = (date) => {
-  const day = date.split(` `)[1];
-  const month = date.split(` `)[0];
-  const year = date.split(` `)[2];
+  const day = castTimeFormat(date.getDate());
+  const month = integerToMonth[castTimeFormat(date.getMonth() + 1)];
+  const year = castTimeFormat(date.getFullYear());
 
   return (
     `<li class="trip-days__item  day">

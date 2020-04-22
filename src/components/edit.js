@@ -9,11 +9,9 @@ const getTypeGroups = (types) => {
 };
 
 const getTypesMarkup = (group, types) => {
-  const allTransferTypes = types.filter((type) => {
-    return type.group === group;
-  });
-  const uniqueTransferTypes = allTransferTypes.filter(function (type, i) {
-    return allTransferTypes.indexOf(type) === i;
+  const allTransferTypes = types.filter((type) => type.group === group);
+  const uniqueTransferTypes = allTransferTypes.filter((type, i) => {
+    return (allTransferTypes.indexOf(type) === i);
   });
 
   return uniqueTransferTypes
@@ -21,7 +19,7 @@ const getTypesMarkup = (group, types) => {
       return (
         `<div class="event__type-item">
           <input id="event-type-${type.type.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type.type.toLowerCase()}">
-          <label class="event__type-label  event__type-label--${type.type.toLowerCase()}" for="event-type-${type.type.toLowerCase()}-1">${type}</label>
+          <label class="event__type-label  event__type-label--${type.type.toLowerCase()}" for="event-type-${type.type.toLowerCase()}-1">${type.type}</label>
         </div>`
       );
     }).join(`\n`);

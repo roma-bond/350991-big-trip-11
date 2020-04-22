@@ -1,4 +1,4 @@
-import {getDuration, getDateString} from '../utils/common.js';
+import {getDuration} from '../utils/common.js';
 
 const getOffersMarkup = (offers) => {
   return offers
@@ -20,9 +20,9 @@ const getEventMarkup = (event) => {
   const title = (event.type.group === `Activity`) ? `${eventType} in ${event.destination}` : `${eventType} to ${event.destination}`;
 
   const offersMarkup = getOffersMarkup(event.offers);
-  const startDate = getDateString(event.time.start);
+  const startDate = event.time.start.toISOString();
   const startTime = event.time.start.toString().slice(16, 21);
-  const endDate = getDateString(event.time.end);
+  const endDate = event.time.end.toISOString();
   const endTime = event.time.end.toString().slice(16, 21);
   const duration = getDuration(event.time);
 
@@ -36,9 +36,9 @@ const getEventMarkup = (event) => {
 
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="${startDate}T${startTime}">${startTime}</time>
+            <time class="event__start-time" datetime="${startDate}">${startTime}</time>
             &mdash;
-            <time class="event__end-time" datetime="${endDate}T${endTime}">${endTime}</time>
+            <time class="event__end-time" datetime="${endDate}">${endTime}</time>
           </p>
           <p class="event__duration">${duration}</p>
         </div>

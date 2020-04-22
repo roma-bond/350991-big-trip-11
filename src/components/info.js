@@ -1,3 +1,6 @@
+import {integerToMonth} from '../mock/const.js';
+import {castTimeFormat} from '../utils/common.js';
+
 const getRoute = (events) => {
   let cities = [];
   events.forEach((eventsGroup) => {
@@ -14,8 +17,8 @@ const getRoute = (events) => {
 const getInfoMarkup = (sortedEvents) => {
   let sorted = sortedEvents.slice();
   const startDate = sorted[0].date;
-  const startDay = startDate.split(` `)[1];
-  const startMonth = startDate.split(` `)[0];
+  const startDay = startDate.getDate();
+  const startMonth = integerToMonth[castTimeFormat(startDate.getMonth() + 1)];
   const start = `${startMonth} ${startDay}`;
 
   const endDate = sorted[sorted.length - 1].events.pop().time.end;

@@ -1,26 +1,18 @@
 const getDuration = (time) => {
-  const diff = new Date(time.end - time.start);
-  let dayDiff = diff.getDate();
-  let hourDiff = diff.getHours();
-  let minDiff = diff.getMinutes();
+  const diff = time.end - time.start;
+  const DAY = 1000 * 60 * 60 * 24; // in ms
+  const HOUR = 1000 * 60 * 60; // in ms
+  const MIN = 1000 * 60; // in ms
 
-  dayDiff = (dayDiff > 0) ? `0${dayDiff}D ` : ``;
-  if (hourDiff === 0) {
-    hourDiff = ``;
-  } else if (hourDiff < 10) {
-    hourDiff = `0${hourDiff}H `;
-  } else {
-    hourDiff = `${hourDiff}H `;
-  }
-  if (minDiff === 0) {
-    minDiff = `00M`;
-  } else if (minDiff < 10) {
-    minDiff = `0${minDiff}M`;
-  } else {
-    minDiff = `${minDiff}M`;
-  }
+  let days = Math.floor(diff / DAY);
+  let hours = Math.floor((diff % DAY) / HOUR);
+  let min = Math.ceil(((diff % DAY) % HOUR) / MIN);
 
-  return `${dayDiff}${hourDiff}${minDiff}`;
+  days = (days === 0) ? `` : `${castTimeFormat(days)}D `;
+  hours = (hours === 0) ? `` : `${castTimeFormat(hours)}H `;
+  min = (min === 0) ? `00M` : `${castTimeFormat(min)}M`;
+
+  return `${days}${hours}${min}`;
 };
 
 const castTimeFormat = (value) => value < 10 ? `0${value}` : String(value);
@@ -39,7 +31,7 @@ const getDateString = (date) => {
 };
 
 const getRandomTime = () => {
-  const FORTNIGHT = 1209600000; // 2 weeks in milliseconds
+  const FORTNIGHT = 1209600000; // 2 weeks in ms
   const year = getRandomInteger(2019, 2020);
   const month = getRandomInteger(1, 12);
   const day = getDay(month, year);
@@ -80,4 +72,4 @@ const getRandomArrayItems = function (array, max) {
   return selection;
 };
 
-export {getDuration, getDateString, getRandomTime, getRandomInteger, getRandomPrice, getRandomArrayItem, getRandomArrayItems, getRandomBoolean};
+export {getDuration, castTimeFormat, getDateString, getRandomTime, getRandomInteger, getRandomPrice, getRandomArrayItem, getRandomArrayItems, getRandomBoolean};
