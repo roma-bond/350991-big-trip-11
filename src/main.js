@@ -17,7 +17,7 @@ const sortEventsPerDay = (events) => {
   }).forEach((evt) => {
     const eventDate = evt.time.start.toString().slice(4, 15);
     if ((sorted.length === 0) || (sorted[sorted.length - 1].date.toString().slice(4, 15) !== eventDate)) {
-      sorted.push({'date': evt.time.start, 'events': [Object.assign(evt)]});
+      sorted.push({'date': evt.time.start, 'events': [evt]});
     } else {
       sorted[sorted.length - 1].events.push(evt);
     }
