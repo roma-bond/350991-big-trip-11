@@ -21,7 +21,7 @@ const getInfoMarkup = (sortedEvents) => {
   const startMonth = integerToMonth[castTimeFormat(startDate.getMonth() + 1)];
   const start = `${startMonth} ${startDay}`;
 
-  const endDate = sorted[sorted.length - 1].events.pop().time.end;
+  const endDate = sorted[sorted.length - 1].events.slice(-1).pop().time.end;
   const endDay = endDate.toString().split(` `)[2];
   const endMonth = endDate.toString().split(` `)[1];
   const end = (startMonth === endMonth) ? `${endDay}` : `${endMonth} ${endDay}`;
