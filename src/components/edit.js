@@ -1,4 +1,5 @@
 import {getRandomBoolean} from '../utils/common.js';
+import {createElements} from "../utils/dom.js";
 import {EVENT_TYPES, CITIES} from '../mock/const.js';
 
 const getTypeGroups = (types) => {
@@ -69,8 +70,7 @@ const getDestinationPhotosMarkup = (photos) => {
   return markup;
 };
 
-const getEventEditMarkup = (sortedEvent) => {
-  const event = sortedEvent.events[0];
+const getEventEditMarkup = (event) => {
   const eventType = (event.type.type !== `Check`) ? event.type.type : `Check-in`;
 
   const title = (event.type.group === `Activity`) ? `${eventType} in` : `${eventType} to`;
@@ -123,7 +123,19 @@ const getEventEditMarkup = (sortedEvent) => {
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Cancel</button>
+        <button class="event__reset-btn" type="reset">Delete</button>
+
+        <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" checked>
+        <label class="event__favorite-btn" for="event-favorite-1">
+          <span class="visually-hidden">Add to favorite</span>
+          <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
+            <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
+          </svg>
+        </label>
+
+        <button class="event__rollup-btn" type="button">
+          <span class="visually-hidden">Open event</span>
+        </button>
       </header>
       <section class="event__details">
         <section class="event__section  event__section--offers">
@@ -149,4 +161,26 @@ const getEventEditMarkup = (sortedEvent) => {
   );
 };
 
-export default getEventEditMarkup;
+class Edit {
+  constructor() {
+    this._element = null;
+  }
+
+  getTemplate(event) {
+    return getEventEditMarkup(event);
+  }
+
+  getElement(event) {
+    if (!this._element) {
+      this._element = createElements(this.getTemplate(event));
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+
+export default Edit;
