@@ -1,4 +1,4 @@
-import {createElements} from "../utils/dom.js";
+import {createElement} from "../utils/dom.js";
 
 const getFiltersMarkup = () => {
   return (
@@ -34,7 +34,7 @@ class Filters {
 
   getElement() {
     if (!this._element) {
-      this._element = createElements(this.getTemplate());
+      this._element = createElement(this.getTemplate());
     }
 
     return this._element;

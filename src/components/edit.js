@@ -1,5 +1,5 @@
 import {getRandomBoolean} from '../utils/common.js';
-import {createElements} from "../utils/dom.js";
+import {createElement} from "../utils/dom.js";
 import {EVENT_TYPES, CITIES} from '../mock/const.js';
 
 const getTypeGroups = (types) => {
@@ -162,17 +162,18 @@ const getEventEditMarkup = (event) => {
 };
 
 class Edit {
-  constructor() {
+  constructor(event) {
+    this._event = event;
     this._element = null;
   }
 
-  getTemplate(event) {
-    return getEventEditMarkup(event);
+  getTemplate() {
+    return getEventEditMarkup(this._event);
   }
 
-  getElement(event) {
+  getElement() {
     if (!this._element) {
-      this._element = createElements(this.getTemplate(event));
+      this._element = createElement(this.getTemplate());
     }
 
     return this._element;

@@ -27,21 +27,24 @@ const sortEventsPerDay = (events) => {
 };
 
 const renderHeader = () => {
-  const infoComponent = new InfoComponent();
-  render(tripMainElement, infoComponent.getElement(sortedEvents), RenderPosition.AFTERBEGIN);
+  const infoComponent = new InfoComponent(sortedEvents);
+  const infoElement = infoComponent.getElement();
+  render(tripMainElement, infoElement, RenderPosition.AFTER_BEGIN);
 
-  const tripInfoElement = document.querySelector(`.trip-info`);
   const totalPrice = events.reduce((sum, event) => {
     return sum + event.price;
   }, 0);
-  const priceComponent = new PriceComponent();
-  render(tripInfoElement, priceComponent.getElement(totalPrice), RenderPosition.BEFOREEND);
+  const priceComponent = new PriceComponent(totalPrice);
+  const priceElement = priceComponent.getElement();
+  render(infoElement, priceElement, RenderPosition.BEFORE_END);
 
   const menuComponent = new MenuComponent();
-  render(tripControls, menuComponent.getElement(), RenderPosition.AFTERBEGIN);
+  const filtersHeader = tripControls.querySelectorAll(`h2`)[1];
+  // filtersHeader.insertAdjacentElement(`beforebegin`, menuComponent.getElement());
+  render(filtersHeader, menuComponent.getElement(), RenderPosition.BEFORE);
 
   const filtersComponent = new FiltersComponent();
-  render(tripControls, filtersComponent.getElement(), RenderPosition.BEFOREEND);
+  render(tripControls, filtersComponent.getElement(), RenderPosition.BEFORE_END);
 };
 
 const renderEventsPerDay = (day, eventsList) => {
@@ -69,10 +72,10 @@ const renderEventsPerDay = (day, eventsList) => {
       showEvent(editElement, eventElement);
     };
 
-    const editComponent = new EditComponent();
-    const [editElement] = [...editComponent.getElement(event)];
-    const eventComponent = new EventComponent();
-    const [eventElement] = [...eventComponent.getElement(event)];
+    const editComponent = new EditComponent(event);
+    const editElement = editComponent.getElement();
+    const eventComponent = new EventComponent(event);
+    const eventElement = eventComponent.getElement();
 
     const openButton = eventElement.querySelector(`.event__rollup-btn`);
     const closeButton = editElement.querySelector(`.event__rollup-btn`);
@@ -80,22 +83,23 @@ const renderEventsPerDay = (day, eventsList) => {
     openButton.addEventListener(`click`, onOpenButtonClick);
     closeButton.addEventListener(`click`, onCloseButtonClick);
     editElement.addEventListener(`submit`, onEditSubmit);
-    render(eventsList, [eventElement], RenderPosition.BEFOREEND);
+    render(eventsList, eventElement, RenderPosition.BEFORE_END);
   });
 };
 
 const renderEvents = () => {
   const sortComponent = new SortComponent();
-  render(tripEventsElement, sortComponent.getElement(), RenderPosition.BEFOREEND);
+  render(tripEventsElement, sortComponent.getElement(), RenderPosition.BEFORE_END);
 
   const daysListComponent = new DaysListComponent();
-  render(tripEventsElement, daysListComponent.getElement(), RenderPosition.BEFOREEND);
-  const daysListElement = document.querySelector(`.trip-days`);
-  sortedEvents.slice(0).forEach((day, i) => {
-    const date = day.date;
-    const dayComponent = new DayComponent();
-    render(daysListElement, dayComponent.getElement(date), RenderPosition.BEFOREEND);
-    const tripDayEventsList = document.querySelectorAll(`.trip-events__list`)[i];
+  const daysListElement = daysListComponent.getElement();
+  render(tripEventsElement, daysListElement, RenderPosition.BEFORE_END);
+
+  sortedEvents.slice().forEach((day) => {
+    const dayComponent = new DayComponent(day.date);
+    const dayElement = dayComponent.getElement();
+    const tripDayEventsList = dayElement.querySelector(`.trip-events__list`);
+    render(daysListElement, dayElement, RenderPosition.BEFORE_END);
     renderEventsPerDay(day, tripDayEventsList);
   });
 };

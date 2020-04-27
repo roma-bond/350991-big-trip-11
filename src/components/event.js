@@ -1,5 +1,5 @@
 import {getDuration} from '../utils/common.js';
-import {createElements} from "../utils/dom.js";
+import {createElement} from "../utils/dom.js";
 
 const getOffersMarkup = (offers) => {
   return offers
@@ -62,17 +62,18 @@ const getEventMarkup = (event) => {
 };
 
 class Event {
-  constructor() {
+  constructor(event) {
+    this._event = event;
     this._element = null;
   }
 
-  getTemplate(event) {
-    return getEventMarkup(event);
+  getTemplate() {
+    return getEventMarkup(this._event);
   }
 
-  getElement(event) {
+  getElement() {
     if (!this._element) {
-      this._element = createElements(this.getTemplate(event));
+      this._element = createElement(this.getTemplate());
     }
 
     return this._element;

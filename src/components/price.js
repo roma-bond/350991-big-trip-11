@@ -1,4 +1,4 @@
-import {createElements} from "../utils/dom.js";
+import {createElement} from "../utils/dom.js";
 
 const getPriceMarkup = (sum) => {
   return (
@@ -9,17 +9,18 @@ const getPriceMarkup = (sum) => {
 };
 
 class Price {
-  constructor() {
+  constructor(sum) {
+    this._sum = sum;
     this._element = null;
   }
 
-  getTemplate(sum) {
-    return getPriceMarkup(sum);
+  getTemplate() {
+    return getPriceMarkup(this._sum);
   }
 
-  getElement(sum) {
+  getElement() {
     if (!this._element) {
-      this._element = createElements(this.getTemplate(sum));
+      this._element = createElement(this.getTemplate(this._sum));
     }
 
     return this._element;
