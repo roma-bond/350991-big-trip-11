@@ -1,6 +1,6 @@
 import InfoComponent from './components/info.js';
 import PriceComponent from './components/price.js';
-import MenuComponent from './components/menu.js';
+import MenuComponent from './components/site-menu.js';
 import FiltersComponent from './components/filters.js';
 import SortComponent from './components/sorting.js';
 import EditComponent from './components/edit.js';
