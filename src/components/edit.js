@@ -17,10 +17,11 @@ const getTypesMarkup = (group, types) => {
 
   return uniqueTransferTypes
     .map((type) => {
+      const typeString = (type.type.toLowerCase() === `check`) ? `check-in` : type.type.toLowerCase();
       return (
         `<div class="event__type-item">
           <input id="event-type-${type.type.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type.type.toLowerCase()}">
-          <label class="event__type-label  event__type-label--${type.type.toLowerCase()}" for="event-type-${type.type.toLowerCase()}-1">${type.type}</label>
+          <label class="event__type-label  event__type-label--${typeString}" for="event-type-${typeString}-1">${type.type}</label>
         </div>`
       );
     }).join(`\n`);
@@ -117,7 +118,7 @@ const getEventEditMarkup = (event) => {
         <div class="event__field-group  event__field-group--price">
           <label class="event__label" for="event-price-1">
             <span class="visually-hidden">Price</span>
-            &euro;
+            ${event.price}&euro;
           </label>
           <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="">
         </div>
