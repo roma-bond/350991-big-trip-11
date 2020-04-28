@@ -7,6 +7,7 @@ import EditComponent from './components/edit.js';
 import DaysListComponent from './components/days-list.js';
 import DayComponent from './components/day.js';
 import EventComponent from './components/event.js';
+import NoEventsComponent from "./components/no-events.js";
 import {default as generateEvents} from './mock/event.js';
 import {render, RenderPosition} from './utils/dom.js';
 
@@ -26,13 +27,15 @@ const sortEventsPerDay = (events) => {
   return sorted;
 };
 
-const renderHeader = () => {
+const renderHeader = (sortedEvents) => {
   const infoComponent = new InfoComponent(sortedEvents);
   const infoElement = infoComponent.getElement();
   render(tripMainElement, infoElement, RenderPosition.AFTER_BEGIN);
 
-  const totalPrice = events.reduce((sum, event) => {
-    return sum + event.price;
+  const totalPrice = sortedEvents.reduce((sum, evnt) => {
+    return sum + evnt.events.reduce((sumDay, event) => {
+      return sumDay + event.price;
+    }, 0);
   }, 0);
   const priceComponent = new PriceComponent(totalPrice);
   const priceElement = priceComponent.getElement();
@@ -40,7 +43,6 @@ const renderHeader = () => {
 
   const menuComponent = new MenuComponent();
   const filtersHeader = tripControls.querySelectorAll(`h2`)[1];
-  // filtersHeader.insertAdjacentElement(`beforebegin`, menuComponent.getElement());
   render(filtersHeader, menuComponent.getElement(), RenderPosition.BEFORE);
 
   const filtersComponent = new FiltersComponent();
@@ -49,17 +51,18 @@ const renderHeader = () => {
 
 const renderEventsPerDay = (day, eventsList) => {
   day.events.slice().forEach((event) => {
-    const showEdit = (editElement, eventElement) => {
+    const showEdit = () => {
       eventsList.replaceChild(editElement, eventElement);
     };
 
-    const showEvent = (editElement, eventElement) => {
+    const showEvent = () => {
       eventsList.replaceChild(eventElement, editElement);
     };
 
     const onOpenButtonClick = (evt) => {
       evt.preventDefault();
       showEdit(editElement, eventElement);
+      document.addEventListener(`keydown`, onEscKeyDown);
     };
 
     const onCloseButtonClick = (evt) => {
@@ -70,6 +73,15 @@ const renderEventsPerDay = (day, eventsList) => {
     const onEditSubmit = (evt) => {
       evt.preventDefault();
       showEvent(editElement, eventElement);
+    };
+
+    const onEscKeyDown = (evt) => {
+      const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
+
+      if (isEscKey) {
+        showEvent();
+        document.removeEventListener(`keydown`, onEscKeyDown);
+      }
     };
 
     const editComponent = new EditComponent(event);
@@ -87,21 +99,25 @@ const renderEventsPerDay = (day, eventsList) => {
   });
 };
 
-const renderEvents = () => {
-  const sortComponent = new SortComponent();
-  render(tripEventsElement, sortComponent.getElement(), RenderPosition.BEFORE_END);
+const renderEvents = (sortedEvents) => {
+  if (sortedEvents.length === 0) {
+    render(tripEventsElement, new NoEventsComponent().getElement(), RenderPosition.BEFORE_END);
+  } else {
+    const sortComponent = new SortComponent();
+    render(tripEventsElement, sortComponent.getElement(), RenderPosition.BEFORE_END);
 
-  const daysListComponent = new DaysListComponent();
-  const daysListElement = daysListComponent.getElement();
-  render(tripEventsElement, daysListElement, RenderPosition.BEFORE_END);
+    const daysListComponent = new DaysListComponent();
+    const daysListElement = daysListComponent.getElement();
+    render(tripEventsElement, daysListElement, RenderPosition.BEFORE_END);
 
-  sortedEvents.slice().forEach((day) => {
-    const dayComponent = new DayComponent(day.date);
-    const dayElement = dayComponent.getElement();
-    const tripDayEventsList = dayElement.querySelector(`.trip-events__list`);
-    render(daysListElement, dayElement, RenderPosition.BEFORE_END);
-    renderEventsPerDay(day, tripDayEventsList);
-  });
+    sortedEvents.slice().forEach((day) => {
+      const dayComponent = new DayComponent(day.date);
+      const dayElement = dayComponent.getElement();
+      const tripDayEventsList = dayElement.querySelector(`.trip-events__list`);
+      render(daysListElement, dayElement, RenderPosition.BEFORE_END);
+      renderEventsPerDay(day, tripDayEventsList);
+    });
+  }
 };
 
 const EVENT_COUNT = 20;
@@ -112,5 +128,5 @@ const tripMainElement = document.querySelector(`.trip-main`);
 const tripControls = document.querySelector(`.trip-controls`);
 const tripEventsElement = document.querySelector(`.trip-events`);
 
-renderHeader();
-renderEvents();
+renderHeader(sortedEvents);
+renderEvents(sortedEvents);

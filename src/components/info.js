@@ -16,22 +16,28 @@ const getRoute = (events) => {
 };
 
 const getInfoMarkup = (sortedEvents) => {
-  let sorted = sortedEvents.slice();
-  const startDate = sorted[0].date;
-  const startDay = startDate.getDate();
-  const startMonth = integerToMonth[castTimeFormat(startDate.getMonth() + 1)];
-  const start = `${startMonth} ${startDay}`;
+  let infoContents = ``;
+  if (sortedEvents.length > 0) {
+    let sorted = sortedEvents.slice();
+    const startDate = sorted[0].date;
+    const startDay = startDate.getDate();
+    const startMonth = integerToMonth[castTimeFormat(startDate.getMonth() + 1)];
+    const start = `${startMonth} ${startDay}`;
 
-  const endDate = sorted[sorted.length - 1].events.slice(-1).pop().time.end;
-  const endDay = endDate.toString().split(` `)[2];
-  const endMonth = endDate.toString().split(` `)[1];
-  const end = (startMonth === endMonth) ? `${endDay}` : `${endMonth} ${endDay}`;
+    const endDate = sorted[sorted.length - 1].events.slice(-1).pop().time.end;
+    const endDay = endDate.toString().split(` `)[2];
+    const endMonth = endDate.toString().split(` `)[1];
+    const end = (startMonth === endMonth) ? `${endDay}` : `${endMonth} ${endDay}`;
+    infoContents = `<div class="trip-info__main">
+          <h1 class="trip-info__title">${getRoute(sortedEvents)}</h1>
+          <p class="trip-info__dates">${start}&nbsp;&mdash;&nbsp;${end}</p>
+        </div>`;
+  } else {
+    infoContents = ``;
+  }
   return (
     `<section class="trip-main__trip-info  trip-info">
-      <div class="trip-info__main">
-        <h1 class="trip-info__title">${getRoute(sortedEvents)}</h1>
-        <p class="trip-info__dates">${start}&nbsp;&mdash;&nbsp;${end}</p>
-      </div>
+      ${infoContents}
     </section>`
   );
 };
