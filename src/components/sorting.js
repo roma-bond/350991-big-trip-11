@@ -1,3 +1,5 @@
+import {createElement} from "../utils/dom.js";
+
 const getSortEventsMarkup = () => {
   return (
     `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
@@ -33,4 +35,26 @@ const getSortEventsMarkup = () => {
   );
 };
 
-export default getSortEventsMarkup;
+class Sort {
+  constructor() {
+    this._element = null;
+  }
+
+  getTemplate() {
+    return getSortEventsMarkup();
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+
+export default Sort;

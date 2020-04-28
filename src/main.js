@@ -1,13 +1,14 @@
-import {default as getInfoMarkup} from './components/info.js';
-import {default as getPriceMarkup} from './components/price.js';
-import {default as getMenuMarkup} from './components/menu.js';
-import {default as getFiltersMarkup} from './components/filters.js';
-import {default as getSortEventsMarkup} from './components/sorting.js';
-import {default as getEventEditMarkup} from './components/edit.js';
-import {default as getDaysListMarkup} from './components/days-list.js';
-import {default as getDayMarkup} from './components/day.js';
-import {default as getEventMarkup} from './components/event.js';
+import InfoComponent from './components/info.js';
+import PriceComponent from './components/price.js';
+import MenuComponent from './components/site-menu.js';
+import FiltersComponent from './components/filters.js';
+import SortComponent from './components/sorting.js';
+import EditComponent from './components/edit.js';
+import DaysListComponent from './components/days-list.js';
+import DayComponent from './components/day.js';
+import EventComponent from './components/event.js';
 import {default as generateEvents} from './mock/event.js';
+import {render, RenderPosition} from './utils/dom.js';
 
 const sortEventsPerDay = (events) => {
   const eventsCopy = events.slice();
@@ -25,40 +26,91 @@ const sortEventsPerDay = (events) => {
   return sorted;
 };
 
+const renderHeader = () => {
+  const infoComponent = new InfoComponent(sortedEvents);
+  const infoElement = infoComponent.getElement();
+  render(tripMainElement, infoElement, RenderPosition.AFTER_BEGIN);
+
+  const totalPrice = events.reduce((sum, event) => {
+    return sum + event.price;
+  }, 0);
+  const priceComponent = new PriceComponent(totalPrice);
+  const priceElement = priceComponent.getElement();
+  render(infoElement, priceElement, RenderPosition.BEFORE_END);
+
+  const menuComponent = new MenuComponent();
+  const filtersHeader = tripControls.querySelectorAll(`h2`)[1];
+  // filtersHeader.insertAdjacentElement(`beforebegin`, menuComponent.getElement());
+  render(filtersHeader, menuComponent.getElement(), RenderPosition.BEFORE);
+
+  const filtersComponent = new FiltersComponent();
+  render(tripControls, filtersComponent.getElement(), RenderPosition.BEFORE_END);
+};
+
+const renderEventsPerDay = (day, eventsList) => {
+  day.events.slice().forEach((event) => {
+    const showEdit = (editElement, eventElement) => {
+      eventsList.replaceChild(editElement, eventElement);
+    };
+
+    const showEvent = (editElement, eventElement) => {
+      eventsList.replaceChild(eventElement, editElement);
+    };
+
+    const onOpenButtonClick = (evt) => {
+      evt.preventDefault();
+      showEdit(editElement, eventElement);
+    };
+
+    const onCloseButtonClick = (evt) => {
+      evt.preventDefault();
+      showEvent(editElement, eventElement);
+    };
+
+    const onEditSubmit = (evt) => {
+      evt.preventDefault();
+      showEvent(editElement, eventElement);
+    };
+
+    const editComponent = new EditComponent(event);
+    const editElement = editComponent.getElement();
+    const eventComponent = new EventComponent(event);
+    const eventElement = eventComponent.getElement();
+
+    const openButton = eventElement.querySelector(`.event__rollup-btn`);
+    const closeButton = editElement.querySelector(`.event__rollup-btn`);
+
+    openButton.addEventListener(`click`, onOpenButtonClick);
+    closeButton.addEventListener(`click`, onCloseButtonClick);
+    editElement.addEventListener(`submit`, onEditSubmit);
+    render(eventsList, eventElement, RenderPosition.BEFORE_END);
+  });
+};
+
+const renderEvents = () => {
+  const sortComponent = new SortComponent();
+  render(tripEventsElement, sortComponent.getElement(), RenderPosition.BEFORE_END);
+
+  const daysListComponent = new DaysListComponent();
+  const daysListElement = daysListComponent.getElement();
+  render(tripEventsElement, daysListElement, RenderPosition.BEFORE_END);
+
+  sortedEvents.slice().forEach((day) => {
+    const dayComponent = new DayComponent(day.date);
+    const dayElement = dayComponent.getElement();
+    const tripDayEventsList = dayElement.querySelector(`.trip-events__list`);
+    render(daysListElement, dayElement, RenderPosition.BEFORE_END);
+    renderEventsPerDay(day, tripDayEventsList);
+  });
+};
+
 const EVENT_COUNT = 20;
 const events = generateEvents(EVENT_COUNT);
 const sortedEvents = sortEventsPerDay(events);
 
-const render = (container, markup, place) => {
-  container.insertAdjacentHTML(place, markup);
-};
-
 const tripMainElement = document.querySelector(`.trip-main`);
-render(tripMainElement, getInfoMarkup(sortedEvents), `afterbegin`);
-
-const tripInfoElement = document.querySelector(`.trip-info__main`);
-const totalPrice = events.reduce((sum, event) => {
-  return sum + event.price;
-}, 0);
-render(tripInfoElement, getPriceMarkup(totalPrice), `afterend`);
-
-const tripControlHeadingElements = document.querySelectorAll(`.trip-controls h2`);
-const menuHeadingElement = tripControlHeadingElements[0];
-const filtersHeadingElement = tripControlHeadingElements[1];
-render(menuHeadingElement, getMenuMarkup(), `afterend`);
-
-render(filtersHeadingElement, getFiltersMarkup(), `afterend`);
-
+const tripControls = document.querySelector(`.trip-controls`);
 const tripEventsElement = document.querySelector(`.trip-events`);
-render(tripEventsElement, getSortEventsMarkup(), `beforeend`);
 
-render(tripEventsElement, getEventEditMarkup(sortedEvents[0]), `beforeend`);
-
-render(tripEventsElement, getDaysListMarkup(), `beforeend`);
-const daysListElement = document.querySelector(`.trip-days`);
-sortedEvents.slice(1).forEach((sortedEvent, i) => {
-  const date = sortedEvent.date;
-  render(daysListElement, getDayMarkup(date), `beforeend`);
-  const tripDayEventsList = document.querySelectorAll(`.trip-events__list`)[i];
-  sortedEvent.events.slice().forEach((event) => render(tripDayEventsList, getEventMarkup(event), `beforeend`));
-});
+renderHeader();
+renderEvents();

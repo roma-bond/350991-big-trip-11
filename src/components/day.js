@@ -1,5 +1,7 @@
 import {integerToMonth} from '../mock/const.js';
 import {castTimeFormat} from '../utils/common.js';
+import {createElement} from "../utils/dom.js";
+
 
 const getDayMarkup = (date) => {
   const day = castTimeFormat(date.getDate());
@@ -18,4 +20,27 @@ const getDayMarkup = (date) => {
   );
 };
 
-export default getDayMarkup;
+class Day {
+  constructor(date) {
+    this._date = date;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return getDayMarkup(this._date);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+
+export default Day;

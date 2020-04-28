@@ -1,19 +1,21 @@
 import {createElement} from "../utils/dom.js";
 
-const getDaysListMarkup = () => {
+const getMenuMarkup = () => {
   return (
-    `<ul class="trip-days">
-    </ul>`
+    `<nav class="trip-controls__trip-tabs  trip-tabs">
+      <a class="trip-tabs__btn  trip-tabs__btn--active" href="#">Table</a>
+      <a class="trip-tabs__btn" href="#">Stats</a>
+    </nav>`
   );
 };
 
-class DaysList {
+class SiteMenu {
   constructor() {
     this._element = null;
   }
 
   getTemplate() {
-    return getDaysListMarkup();
+    return getMenuMarkup();
   }
 
   getElement() {
@@ -29,4 +31,4 @@ class DaysList {
   }
 }
 
-export default DaysList;
+export default SiteMenu;
