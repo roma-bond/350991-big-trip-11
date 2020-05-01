@@ -34,7 +34,7 @@ const replace = (newComponent, oldComponent) => {
   const newElement = newComponent.getElement();
   const oldElement = oldComponent.getElement();
 
-  const isExistElements = !!(parentElement && newElement && oldElement);
+  const isExistElements = parentElement && newElement && oldElement;
 
   if (isExistElements && parentElement.contains(oldElement)) {
     parentElement.replaceChild(newElement, oldElement);
