@@ -1,6 +1,6 @@
 import {integerToMonth} from '../mock/const.js';
 import {castTimeFormat} from '../utils/common.js';
-import {createElement} from "../utils/dom.js";
+import AbstractComponent from "./abstract-component.js";
 
 
 const getDayMarkup = (date) => {
@@ -20,26 +20,16 @@ const getDayMarkup = (date) => {
   );
 };
 
-class Day {
+class Day extends AbstractComponent {
   constructor(date) {
+    super();
+
     this._date = date;
     this._element = null;
   }
 
   getTemplate() {
     return getDayMarkup(this._date);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
 

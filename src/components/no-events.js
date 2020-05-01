@@ -1,4 +1,4 @@
-import {createElement} from "../utils/dom.js";
+import AbstractComponent from "./abstract-component.js";
 
 const getNoEventsMarkup = () => {
   return (
@@ -6,25 +6,9 @@ const getNoEventsMarkup = () => {
   );
 };
 
-class NoEvents {
-  constructor() {
-    this._element = null;
-  }
-
+class NoEvents extends AbstractComponent {
   getTemplate() {
     return getNoEventsMarkup();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
 

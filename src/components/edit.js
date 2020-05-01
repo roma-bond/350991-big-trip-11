@@ -1,5 +1,5 @@
 import {getRandomBoolean} from '../utils/common.js';
-import {createElement} from "../utils/dom.js";
+import AbstractComponent from "./abstract-component.js";
 import {EVENT_TYPES, CITIES} from '../mock/const.js';
 
 const getTypeGroups = (types) => {
@@ -162,8 +162,10 @@ const getEventEditMarkup = (event) => {
   );
 };
 
-class Edit {
+class Edit extends AbstractComponent {
   constructor(event) {
+    super();
+
     this._event = event;
     this._element = null;
   }
@@ -172,16 +174,13 @@ class Edit {
     return getEventEditMarkup(this._event);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  setSubmitHandler(handler) {
+    this.getElement().addEventListener(`submit`, handler);
   }
 
-  removeElement() {
-    this._element = null;
+  setCloseButtonClickHandler(handler) {
+    const closeButton = this.getElement().querySelector(`.event__rollup-btn`);
+    closeButton.addEventListener(`click`, handler);
   }
 }
 

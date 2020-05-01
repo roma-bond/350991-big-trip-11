@@ -1,6 +1,6 @@
 import {integerToMonth} from '../mock/const.js';
 import {castTimeFormat} from '../utils/common.js';
-import {createElement} from "../utils/dom.js";
+import AbstractComponent from "./abstract-component.js";
 
 const getRoute = (events) => {
   let cities = [];
@@ -42,26 +42,16 @@ const getInfoMarkup = (sortedEvents) => {
   );
 };
 
-class Info {
+class Info extends AbstractComponent {
   constructor(sorted) {
+    super();
+
     this._sorted = sorted;
     this._element = null;
   }
 
   getTemplate() {
     return getInfoMarkup(this._sorted);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate(this._sorted));
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
 

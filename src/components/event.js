@@ -1,5 +1,5 @@
 import {getDuration} from '../utils/common.js';
-import {createElement} from "../utils/dom.js";
+import AbstractComponent from "./abstract-component.js";
 
 const getOffersMarkup = (offers) => {
   return offers
@@ -61,8 +61,10 @@ const getEventMarkup = (event) => {
   );
 };
 
-class Event {
+class Event extends AbstractComponent {
   constructor(event) {
+    super();
+
     this._event = event;
     this._element = null;
   }
@@ -71,16 +73,9 @@ class Event {
     return getEventMarkup(this._event);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+  setOpenButtonClickHandler(handler) {
+    const openButton = this.getElement().querySelector(`.event__rollup-btn`);
+    openButton.addEventListener(`click`, handler);
   }
 }
 
