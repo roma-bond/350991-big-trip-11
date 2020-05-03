@@ -60,6 +60,10 @@ class Sort extends AbstractComponent {
     this.getElement().addEventListener(`click`, (evt) => {
       evt.preventDefault();
 
+      if (evt.target.tagName !== `LABEL`) {
+        return;
+      }
+
       const sortType = evt.target.innerText.toLowerCase();
 
       if (this._currentSortType === sortType) {
@@ -67,7 +71,7 @@ class Sort extends AbstractComponent {
       }
 
       this._currentSortType = sortType;
-
+      document.querySelector(`#${evt.target.attributes.for.value}`).checked = true;
       handler(this._currentSortType);
     });
   }

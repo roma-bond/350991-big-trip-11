@@ -33,5 +33,5 @@ const tripEventsElement = document.querySelector(`.trip-events`);
 
 const tripController = new TripController(tripEventsElement, events);
 
-tripController.render(tripController.sortedEvents);
+tripController.render();
 renderHeader(tripController.sortedEvents);

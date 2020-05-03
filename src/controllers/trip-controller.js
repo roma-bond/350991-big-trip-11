@@ -105,7 +105,6 @@ const renderEvent = (event, tripDay) => {
 };
 
 const renderUserSortedEvents = (sortedEvents, daysListElement) => {
-  // console.log(sortedEvents)
   sortedEvents.slice().forEach((event) => {
     const dayComponent = new DayComponent(event.time.start);
     const dayElement = dayComponent.getElement();
@@ -143,8 +142,9 @@ class TripController {
       daysListElement.innerHTML = ``;
       if (sortType === SortType.DEFAULT) {
         renderDefaultSort(userSortedEvents, daysListElement);
+      } else {
+        renderUserSortedEvents(userSortedEvents, daysListElement);
       }
-      renderUserSortedEvents(userSortedEvents, daysListElement);
     });
   }
 
