@@ -118,7 +118,7 @@ class TripController {
   constructor(container, events) {
     this._container = container;
     this._events = events;
-    this.sortedEvents = this.getSortedEvents();
+    this._sortedEvents = this.getSortedEvents();
 
     this._noTasksComponent = new NoEventsComponent();
     this._sortComponent = new SortComponent();
@@ -126,14 +126,14 @@ class TripController {
   }
 
   render() {
-    if (this.sortedEvents.length === 0) {
+    if (this._sortedEvents.length === 0) {
       render(this._container, this._noTasksComponent, RenderPosition.BEFORE_END);
     } else {
       render(this._container, this._sortComponent, RenderPosition.BEFORE_END);
 
       const daysListElement = this._daysListComponent.getElement();
       render(this._container, this._daysListComponent, RenderPosition.BEFORE_END);
-      renderDefaultSort(this.getSortedEvents(), daysListElement);
+      renderDefaultSort(this._sortedEvents, daysListElement);
     }
 
     this._sortComponent.setSortTypeChangeHandler((sortType) => {
