@@ -1,5 +1,11 @@
 import AbstractComponent from "./abstract-component.js";
 
+export const SortType = {
+  DEFAULT: `event`,
+  TIME: `time`,
+  PRICE: `price`
+};
+
 const getSortEventsMarkup = () => {
   return (
     `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
@@ -36,8 +42,38 @@ const getSortEventsMarkup = () => {
 };
 
 class Sort extends AbstractComponent {
+  constructor() {
+    super();
+
+    this._currentSortType = SortType.DEFAULT;
+  }
+
   getTemplate() {
     return getSortEventsMarkup();
+  }
+
+  getSortType() {
+    return this._currentSortType;
+  }
+
+  setSortTypeChangeHandler(handler) {
+    this.getElement().addEventListener(`click`, (evt) => {
+      evt.preventDefault();
+
+      if (evt.target.tagName !== `LABEL`) {
+        return;
+      }
+
+      const sortType = evt.target.innerText.toLowerCase();
+
+      if (this._currentSortType === sortType) {
+        return;
+      }
+
+      this._currentSortType = sortType;
+      document.querySelector(`#${evt.target.attributes.for.value}`).checked = true;
+      handler(this._currentSortType);
+    });
   }
 }
 
