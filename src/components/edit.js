@@ -1,6 +1,7 @@
+import {getRandomArrayItems} from '../utils/common.js';
 import {getRandomBoolean} from '../utils/common.js';
-import AbstractComponent from "./abstract-component.js";
-import {EVENT_TYPES, CITIES} from '../mock/const.js';
+import AbstractSmartComponent from "./abstract-smart-component.js";
+import {EVENT_TYPES, CITIES, offersToType} from '../mock/const.js';
 
 const getTypeGroups = (types) => {
   const groups = types.map((type) => type.group);
@@ -18,9 +19,10 @@ const getTypesMarkup = (group, types) => {
   return uniqueTransferTypes
     .map((type) => {
       const typeString = (type.type.toLowerCase() === `check`) ? `check-in` : type.type.toLowerCase();
+      const inputValue = (typeString !== `check-in`) ? typeString : `check`;
       return (
         `<div class="event__type-item">
-          <input id="event-type-${type.type.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type.type.toLowerCase()}">
+          <input id="event-type-${typeString}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${inputValue}">
           <label class="event__type-label  event__type-label--${typeString}" for="event-type-${typeString}-1">${type.type}</label>
         </div>`
       );
@@ -78,6 +80,7 @@ const getEventEditMarkup = (event) => {
 
   const offersMarkup = getOffersMarkup(event.offers);
   const destinationPhotosMarkup = getDestinationPhotosMarkup(event.destinationInfo.photos);
+  const isFavorite = event.isFavorite ? `checked` : ``;
 
   return (
     `<form class="trip-events__item  event  event--edit" action="#" method="post">
@@ -126,7 +129,7 @@ const getEventEditMarkup = (event) => {
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
         <button class="event__reset-btn" type="reset">Delete</button>
 
-        <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" checked>
+        <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${isFavorite}>
         <label class="event__favorite-btn" for="event-favorite-1">
           <span class="visually-hidden">Add to favorite</span>
           <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
@@ -162,25 +165,66 @@ const getEventEditMarkup = (event) => {
   );
 };
 
-class Edit extends AbstractComponent {
+class Edit extends AbstractSmartComponent {
   constructor(event) {
     super();
 
     this._event = event;
     this._element = null;
+    this._submitHandler = null;
+    this._setCloseButtonClickHandler = null;
+    this._setFavoritesButtonClickHandler = null;
+    this._setTypeChoiceHandler = null;
+
+    this._subscribeOnEvents();
   }
 
   getTemplate() {
     return getEventEditMarkup(this._event);
   }
 
+  recoveryListeners() {
+    this.setSubmitHandler(this._submitHandler);
+    this._subscribeOnEvents();
+  }
+
+  rerender() {
+    super.rerender();
+
+    // this._applyFlatpickr();
+  }
+
   setSubmitHandler(handler) {
     this.getElement().addEventListener(`submit`, handler);
+    this._submitHandler = handler;
   }
 
   setCloseButtonClickHandler(handler) {
     const closeButton = this.getElement().querySelector(`.event__rollup-btn`);
     closeButton.addEventListener(`click`, handler);
+    this._setCloseButtonClickHandler = handler;
+  }
+
+  setFavoritesButtonClickHandler(handler) {
+    this.getElement().querySelector(`.event__favorite-btn`)
+      .addEventListener(`click`, handler);
+    this._setFavoritesButtonClickHandler = handler;
+  }
+
+  _subscribeOnEvents() {
+    const element = this.getElement();
+
+    element.querySelectorAll(`.event__type-input`).forEach((evtType) => {
+      evtType.addEventListener(`change`, (evt) => {
+        const type = evt.target.value;
+        let newType = {};
+        newType.type = type[0].toUpperCase() + type.slice(1);
+        newType.group = EVENT_TYPES.filter((it) => it.type === newType.type)[0].group;
+        this._event.type = newType;
+        this._event.offers = getRandomArrayItems(offersToType[this._event.type.type], 3);
+        this.rerender();
+      });
+    });
   }
 }
 
