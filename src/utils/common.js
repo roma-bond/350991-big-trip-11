@@ -5,11 +5,11 @@ const getDuration = (time) => {
   const end = moment(time.end);
   const diff = end.diff(start);
 
-  const duration = moment.utc(diff).format(`DD HH mm`);
+  const durations = moment.utc(diff).format(`DD HH mm`).split(` `);
 
-  const days = (duration.split(` `)[0] === 0) ? `` : `${duration.split(` `)[0] + 1}D `;
-  const hours = (duration.split(` `)[1] === 0) ? `` : `${duration.split(` `)[1]}H `;
-  const min = (duration.split(` `)[2] === 0) ? `00M` : `${duration.split(` `)[2]}M`;
+  const days = (durations[0] === 0) ? `` : `${durations[0] + 1}D `;
+  const hours = (durations[1] === 0) ? `` : `${durations[1]}H `;
+  const min = (durations[2] === 0) ? `00M` : `${durations[2]}M`;
 
   return `${days}${hours}${min}`;
 };

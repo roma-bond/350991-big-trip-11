@@ -228,6 +228,7 @@ class Edit extends AbstractSmartComponent {
     this._flatpickrStart = flatpickr(dateStartElement, {
       altInput: true,
       allowInput: true,
+      enableTime: true,
       altFormat: `d/m/Y H:i`,
       defaultDate: this._event.time.start,
     });
@@ -236,8 +237,9 @@ class Edit extends AbstractSmartComponent {
     this._flatpickrEnd = flatpickr(dateEndElement, {
       altInput: true,
       allowInput: true,
+      enableTime: true,
       altFormat: `d/m/Y H:i`,
-      defaultDate: this._event.time.start,
+      defaultDate: this._event.time.end,
     });
   }
 
