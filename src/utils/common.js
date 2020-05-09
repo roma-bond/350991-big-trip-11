@@ -1,16 +1,15 @@
+import moment from "moment";
+
 const getDuration = (time) => {
-  const diff = time.end - time.start;
-  const DAY = 1000 * 60 * 60 * 24; // in ms
-  const HOUR = 1000 * 60 * 60; // in ms
-  const MIN = 1000 * 60; // in ms
+  const start = moment(time.start);
+  const end = moment(time.end);
+  const diff = end.diff(start);
 
-  let days = Math.floor(diff / DAY);
-  let hours = Math.floor((diff % DAY) / HOUR);
-  let min = Math.ceil(((diff % DAY) % HOUR) / MIN);
+  const duration = moment.utc(diff).format(`DD HH mm`);
 
-  days = (days === 0) ? `` : `${castTimeFormat(days)}D `;
-  hours = (hours === 0) ? `` : `${castTimeFormat(hours)}H `;
-  min = (min === 0) ? `00M` : `${castTimeFormat(min)}M`;
+  const days = (duration.split(` `)[0] === 0) ? `` : `${duration.split(` `)[0] + 1}D `;
+  const hours = (duration.split(` `)[1] === 0) ? `` : `${duration.split(` `)[1]}H `;
+  const min = (duration.split(` `)[2] === 0) ? `00M` : `${duration.split(` `)[2]}M`;
 
   return `${days}${hours}${min}`;
 };

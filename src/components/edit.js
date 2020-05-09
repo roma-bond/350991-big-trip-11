@@ -2,6 +2,8 @@ import {getRandomArrayItems} from '../utils/common.js';
 import {getRandomBoolean} from '../utils/common.js';
 import AbstractSmartComponent from "./abstract-smart-component.js";
 import {EVENT_TYPES, CITIES, offersToType} from '../mock/const.js';
+import flatpickr from "flatpickr";
+import "flatpickr/dist/flatpickr.min.css";
 
 const getTypeGroups = (types) => {
   const groups = types.map((type) => type.group);
@@ -171,12 +173,21 @@ class Edit extends AbstractSmartComponent {
 
     this._event = event;
     this._element = null;
+    this._flatpickrStart = null;
+    this._flatpickrEnd = null;
     this._submitHandler = null;
     this._setCloseButtonClickHandler = null;
     this._setFavoritesButtonClickHandler = null;
     this._setTypeChoiceHandler = null;
 
+    this._applyFlatpickr();
     this._subscribeOnEvents();
+  }
+
+  rerender() {
+    super.rerender();
+
+    this._applyFlatpickr();
   }
 
   getTemplate() {
@@ -203,6 +214,31 @@ class Edit extends AbstractSmartComponent {
     this.getElement().querySelector(`.event__favorite-btn`)
       .addEventListener(`click`, handler);
     this._setFavoritesButtonClickHandler = handler;
+  }
+
+  _applyFlatpickr() {
+    if (this._flatpickrStart || this._flatpickrEnd) {
+      this._flatpickrStart.destroy();
+      this._flatpickrStart = null;
+      this._flatpickrEnd.destroy();
+      this._flatpickrEnd = null;
+    }
+
+    const dateStartElement = this.getElement().querySelector(`#event-start-time-1`);
+    this._flatpickrStart = flatpickr(dateStartElement, {
+      altInput: true,
+      allowInput: true,
+      altFormat: `d/m/Y H:i`,
+      defaultDate: this._event.time.start,
+    });
+
+    const dateEndElement = this.getElement().querySelector(`#event-end-time-1`);
+    this._flatpickrEnd = flatpickr(dateEndElement, {
+      altInput: true,
+      allowInput: true,
+      altFormat: `d/m/Y H:i`,
+      defaultDate: this._event.time.start,
+    });
   }
 
   _subscribeOnEvents() {
