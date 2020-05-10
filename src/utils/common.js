@@ -1,18 +1,18 @@
+import moment from "moment";
+
 const getDuration = (time) => {
-  const diff = time.end - time.start;
-  const DAY = 1000 * 60 * 60 * 24; // in ms
-  const HOUR = 1000 * 60 * 60; // in ms
-  const MIN = 1000 * 60; // in ms
+  const start = moment(time.start);
+  const end = moment(time.end);
 
-  let days = Math.floor(diff / DAY);
-  let hours = Math.floor((diff % DAY) / HOUR);
-  let min = Math.ceil(((diff % DAY) % HOUR) / MIN);
+  let days = end.diff(start, `days`);
+  let hours = end.diff(start, `hours`) % 24;
+  let mins = end.diff(start, `minutes`) % 60;
 
-  days = (days === 0) ? `` : `${castTimeFormat(days)}D `;
-  hours = (hours === 0) ? `` : `${castTimeFormat(hours)}H `;
-  min = (min === 0) ? `00M` : `${castTimeFormat(min)}M`;
+  days = (days < 10) ? `0${days}` : days;
+  hours = (hours < 10) ? `0${hours}` : hours;
+  mins = (mins < 10) ? `0${mins}` : mins;
 
-  return `${days}${hours}${min}`;
+  return `${days}D ${hours}H ${mins}M`;
 };
 
 const castTimeFormat = (value) => value < 10 ? `0${value}` : String(value);
