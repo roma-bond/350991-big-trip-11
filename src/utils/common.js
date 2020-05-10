@@ -3,15 +3,16 @@ import moment from "moment";
 const getDuration = (time) => {
   const start = moment(time.start);
   const end = moment(time.end);
-  const diff = end.diff(start);
 
-  const durations = moment.utc(diff).format(`DD HH mm`).split(` `);
+  let days = end.diff(start, `days`);
+  let hours = end.diff(start, `hours`) % 24;
+  let mins = end.diff(start, `minutes`) % 60;
 
-  const days = (durations[0] === 0) ? `` : `${durations[0] + 1}D `;
-  const hours = (durations[1] === 0) ? `` : `${durations[1]}H `;
-  const min = (durations[2] === 0) ? `00M` : `${durations[2]}M`;
+  days = (days < 10) ? `0${days}` : days;
+  hours = (hours < 10) ? `0${hours}` : hours;
+  mins = (mins < 10) ? `0${mins}` : mins;
 
-  return `${days}${hours}${min}`;
+  return `${days}D ${hours}H ${mins}M`;
 };
 
 const castTimeFormat = (value) => value < 10 ? `0${value}` : String(value);
