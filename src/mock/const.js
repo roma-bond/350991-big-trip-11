@@ -47,4 +47,10 @@ const integerToMonth = {
   '12': `dec`
 };
 
-export {EVENT_TYPES, CITIES, offersToType, INFO, integerToMonth};
+const FilterType = {
+  EVERYTHING: `everything`,
+  FUTURE: `future`,
+  PAST: `past`,
+};
+
+export {EVENT_TYPES, CITIES, offersToType, INFO, integerToMonth, FilterType};

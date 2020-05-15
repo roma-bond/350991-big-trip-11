@@ -5,6 +5,7 @@ const generateEvent = () => {
   const type = getRandomArrayItem(EVENT_TYPES);
 
   return {
+    id: String(new Date() + Math.random()),
     type,
     time: getRandomTime(),
     price: getRandomPrice(),
