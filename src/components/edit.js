@@ -309,6 +309,8 @@ class Edit extends AbstractSmartComponent {
 
   _subscribeOnEvents() {
     const element = this.getElement();
+    const priceElement = element.querySelector(`.event__input--price`);
+    const destinationElement = element.querySelector(`.event__input--destination`);
 
     element.querySelectorAll(`.event__type-input`).forEach((evtType) => {
       evtType.addEventListener(`change`, (evt) => {
@@ -320,6 +322,20 @@ class Edit extends AbstractSmartComponent {
         this._event.offers = getRandomArrayItems(offersToType[this._event.type.type], 3);
         this.rerender();
       });
+    });
+
+    destinationElement.addEventListener(`change`, (evt) => {
+      const city = evt.target.value;
+      if (!CITIES.includes(city)) {
+        destinationElement.setCustomValidity(`Please choose a city from the list`);
+      }
+    });
+
+    priceElement.addEventListener(`change`, (evt) => {
+      const price = parseFloat(evt.target.value);
+      if (isNaN(price)) {
+        priceElement.setCustomValidity(`Please specify some number`);
+      }
     });
   }
 }

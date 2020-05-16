@@ -98,6 +98,8 @@ class TripController {
       return;
     }
 
+    this._onViewChange();
+
     const dayComponent = new DayComponent(EmptyPoint.time.start);
     const dayElement = dayComponent.getElement();
     const tripDayEventsList = dayElement.querySelector(`.trip-events__list`);
