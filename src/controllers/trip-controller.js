@@ -157,6 +157,7 @@ class TripController {
   }
 
   _renderPoints(points, sort = SortType.DEFAULT) {
+    points = (points.date) ? points : this._sortEvents();
     const daysListElement = this._daysListComponent.getElement();
     this._showedPointControllers = renderEvents(points, daysListElement, sort, this._onDataChange, this._onViewChange);
   }

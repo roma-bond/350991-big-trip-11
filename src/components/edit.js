@@ -127,7 +127,7 @@ const getEventEditMarkup = (event) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${event.price}">
+          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" step="0.01" value="${event.price}">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -324,17 +324,18 @@ class Edit extends AbstractSmartComponent {
       });
     });
 
-    destinationElement.addEventListener(`change`, (evt) => {
-      const city = evt.target.value;
-      if (!CITIES.includes(city)) {
-        destinationElement.setCustomValidity(`Please choose a city from the list`);
+    destinationElement.addEventListener(`input`, (evt) => {
+      evt.target.setCustomValidity(`Please choose a city from the list`);
+      if (CITIES.includes(evt.target.value)) {
+        evt.target.setCustomValidity(``);
       }
     });
 
     priceElement.addEventListener(`change`, (evt) => {
       const price = parseFloat(evt.target.value);
-      if (isNaN(price)) {
-        priceElement.setCustomValidity(`Please specify some number`);
+      evt.target.setCustomValidity(`Please specify some number`);
+      if (!isNaN(price)) {
+        priceElement.setCustomValidity(``);
       }
     });
   }
