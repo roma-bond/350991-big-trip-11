@@ -51,11 +51,12 @@ const getEventDestinationListMarkup = (cities) => {
 
 const getOffersMarkup = (offers) => {
   return offers
-    .map((offer) => {
+    .map((offer, i) => {
+      const idCount = i + 1;
       const checked = getRandomBoolean() ? `checked` : ``;
       return (
         `<div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" ${checked}>
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-${idCount}" type="checkbox" name="event-offer-luggage" ${checked}>
           <label class="event__offer-label" for="event-offer-luggage-1">
             <span class="event__offer-title">${offer.title}</span>
             &plus;
@@ -83,6 +84,7 @@ const getEventEditMarkup = (event) => {
   const offersMarkup = getOffersMarkup(event.offers);
   const destinationPhotosMarkup = getDestinationPhotosMarkup(event.destinationInfo.photos);
   const isFavorite = event.isFavorite ? `checked` : ``;
+  const destinationList = getEventDestinationListMarkup(CITIES);
 
   return (
     `<form class="trip-events__item  event  event--edit" action="#" method="post">
@@ -104,7 +106,7 @@ const getEventEditMarkup = (event) => {
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${event.destination}" list="destination-list-1">
           <datalist id="destination-list-1">
-            ${getEventDestinationListMarkup(CITIES)}
+            ${destinationList}
           </datalist>
         </div>
 
@@ -125,7 +127,7 @@ const getEventEditMarkup = (event) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${event.price}">
+          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" step="0.01" value="${event.price}">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -167,6 +169,40 @@ const getEventEditMarkup = (event) => {
   );
 };
 
+const parseFormData = (form) => {
+  let eventType = form.querySelector(`.event__type-icon`).src.split(`/`).pop().split(`.`)[0];
+  eventType = eventType[0].toUpperCase() + eventType.slice(1);
+  eventType = (eventType !== `Check-in`) ? eventType : `Check`;
+  const eventGroup = EVENT_TYPES.find((it) => {
+    return it.type === eventType;
+  }).group;
+
+  return {
+    offers: Array.from(form.querySelectorAll(`.event__offer-selector`)).map((el) => {
+      return {
+        title: el.querySelector(`.event__offer-title`).innerText,
+        price: el.querySelector(`.event__offer-price`).innerText
+      };
+    }),
+    destination: form.querySelector(`.event__input--destination`).value,
+    price: form.querySelector(`.event__input--price`).value,
+    time:
+      {
+        start: new Date(document.querySelector(`[name^="event-start-time"]`).value),
+        end: new Date(document.querySelector(`[name^="event-end-time"]`).value),
+      },
+    type:
+      {
+        type: eventType,
+        group: eventGroup
+      },
+    destinationInfo: {
+      info: Array.from(form.querySelector(`.event__destination-description`).innerText.split(`. `)),
+      photos: form.querySelector(`.event__photos-tape`).length,
+    }
+  };
+};
+
 class Edit extends AbstractSmartComponent {
   constructor(event) {
     super();
@@ -179,9 +215,24 @@ class Edit extends AbstractSmartComponent {
     this._setCloseButtonClickHandler = null;
     this._setFavoritesButtonClickHandler = null;
     this._setTypeChoiceHandler = null;
+    this._deleteButtonClickHandler = null;
 
     this._applyFlatpickr();
     this._subscribeOnEvents();
+  }
+
+  removeElement() {
+    if (this._flatpickrStart) {
+      this._flatpickrStart.destroy();
+      this._flatpickrStart = null;
+    }
+
+    if (this._flatpickrEnd) {
+      this._flatpickrEnd.destroy();
+      this._flatpickrEnd = null;
+    }
+
+    super.removeElement();
   }
 
   rerender() {
@@ -196,7 +247,20 @@ class Edit extends AbstractSmartComponent {
 
   recoveryListeners() {
     this.setSubmitHandler(this._submitHandler);
+    this.setDeleteButtonClickHandler(this._deleteButtonClickHandler);
     this._subscribeOnEvents();
+  }
+
+  getData() {
+    const form = this.getElement();
+    return parseFormData(form);
+  }
+
+  setDeleteButtonClickHandler(handler) {
+    this.getElement().querySelector(`.event__reset-btn`)
+      .addEventListener(`click`, handler);
+
+    this._deleteButtonClickHandler = handler;
   }
 
   setSubmitHandler(handler) {
@@ -245,6 +309,8 @@ class Edit extends AbstractSmartComponent {
 
   _subscribeOnEvents() {
     const element = this.getElement();
+    const priceElement = element.querySelector(`.event__input--price`);
+    const destinationElement = element.querySelector(`.event__input--destination`);
 
     element.querySelectorAll(`.event__type-input`).forEach((evtType) => {
       evtType.addEventListener(`change`, (evt) => {
@@ -256,6 +322,21 @@ class Edit extends AbstractSmartComponent {
         this._event.offers = getRandomArrayItems(offersToType[this._event.type.type], 3);
         this.rerender();
       });
+    });
+
+    destinationElement.addEventListener(`input`, (evt) => {
+      evt.target.setCustomValidity(`Please choose a city from the list`);
+      if (CITIES.includes(evt.target.value)) {
+        evt.target.setCustomValidity(``);
+      }
+    });
+
+    priceElement.addEventListener(`change`, (evt) => {
+      const price = parseFloat(evt.target.value);
+      evt.target.setCustomValidity(`Please specify some number`);
+      if (!isNaN(price)) {
+        priceElement.setCustomValidity(``);
+      }
     });
   }
 }
