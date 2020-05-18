@@ -3,6 +3,7 @@ import PointController, {Mode as PointControllerMode, EmptyPoint} from "./point-
 import DaysListComponent from '../components/days-list.js';
 import DayComponent from '../components/day.js';
 import NoEventsComponent from "../components/no-events.js";
+import StatsComponent from '../components/statistics.js';
 import {RenderPosition, render, remove} from '../utils/render.js';
 
 const sortEventsPerDay = (events) => {
@@ -74,6 +75,7 @@ class TripController {
     this._noTasksComponent = new NoEventsComponent();
     this._sortComponent = new SortComponent();
     this._daysListComponent = new DaysListComponent();
+    this._statsComponent = new StatsComponent(this._pointsModel.getPointsNotFiltered());
     this._creatingEvent = null;
 
     this._onDataChange = this._onDataChange.bind(this);
@@ -83,7 +85,10 @@ class TripController {
     this._pointsModel.setFilterChangeHandler(this._onFilterChange);
   }
 
-  render() {
+  renderTable() {
+    this._statsComponent.hide();
+    this._updatePoints();
+
     if (this._sortedEvents.length === 0) {
       render(this._container, this._noTasksComponent, RenderPosition.BEFORE_END);
     } else {
@@ -91,6 +96,17 @@ class TripController {
       let sortType = this._sortComponent.getSortType();
       this._renderPoints(this._sortEvents(sortType), sortType);
     }
+    this._sortComponent.show();
+    this._daysListComponent.show();
+  }
+
+  renderStats() {
+    this._statsComponent.show();
+    this._sortComponent.hide();
+    this._daysListComponent.hide();
+    this._sortComponent.setDefaultSortType();
+
+    render(this._container, this._statsComponent, RenderPosition.AFTER);
   }
 
   createEvent() {
