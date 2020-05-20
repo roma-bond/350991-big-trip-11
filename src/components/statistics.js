@@ -354,7 +354,8 @@ class Statistics extends AbstractSmartComponent {
     return getStatisticsMarkup();
   }
 
-  show() {
+  show(newEvents) {
+    this._events = newEvents;
     super.show();
     this.rerender(this._events);
   }

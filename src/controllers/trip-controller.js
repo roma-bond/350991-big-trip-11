@@ -101,7 +101,7 @@ class TripController {
   }
 
   renderStats() {
-    this._statsComponent.show();
+    this._statsComponent.show(this._pointsModel.getPointsNotFiltered());
     this._sortComponent.hide();
     this._daysListComponent.hide();
     this._sortComponent.setDefaultSortType();

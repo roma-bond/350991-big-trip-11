@@ -1,7 +1,22 @@
 import HeaderController from "./controllers/header-controller.js";
 import TripController from "./controllers/trip-controller.js";
 import PointsModel from "./models/points.js";
+import {MenuItem} from "./components/site-menu.js";
 import {default as generateEvents} from './mock/event.js';
+
+const setOnModeChange = (menuItem) => {
+  switch (menuItem) {
+    case MenuItem.TABLE:
+      headerController.toggleMode(menuItem);
+      tripController.renderTable();
+      break;
+
+    case MenuItem.STATISTICS:
+      headerController.toggleMode(menuItem);
+      tripController.renderStats();
+      break;
+  }
+};
 
 const EVENT_COUNT = 20;
 const events = generateEvents(EVENT_COUNT);
@@ -13,37 +28,10 @@ const tripController = new TripController(tripEventsElement, pointsModel);
 tripController.renderTable();
 
 const tripMainElement = document.querySelector(`.trip-main`);
-const headerController = new HeaderController(tripMainElement, pointsModel);
+const headerController = new HeaderController(tripMainElement, pointsModel, setOnModeChange);
 headerController.render(tripController.getSortedEvents());
 
 const addEventButton = document.querySelector(`.trip-main__event-add-btn`);
 addEventButton.addEventListener(`click`, () => {
   tripController.createEvent();
 });
-
-const tableModeButton = document.querySelectorAll(`.trip-tabs__btn`)[0];
-const statsModeButton = document.querySelectorAll(`.trip-tabs__btn`)[1];
-
-const toggleMode = (evt) => {
-  const otherModeElement = evt.target.nextElementSibling || evt.target.previousElementSibling;
-  const activeBtn = `trip-tabs__btn--active`;
-  if (evt.target.classList.contains(activeBtn)) {
-    evt.target.classList.remove(activeBtn);
-    otherModeElement.classList.add(activeBtn);
-  } else {
-    evt.target.classList.add(activeBtn);
-    otherModeElement.classList.remove(activeBtn);
-  }
-};
-
-tableModeButton.addEventListener(`click`, (evt) => {
-  toggleMode(evt);
-  tripController.renderTable();
-});
-
-statsModeButton.addEventListener(`click`, (evt) => {
-  toggleMode(evt);
-  tripController.renderStats();
-});
-
-

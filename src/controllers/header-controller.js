@@ -7,15 +7,18 @@ import {RenderPosition, render} from '../utils/render.js';
 const tripControls = document.querySelector(`.trip-controls`);
 
 class HeaderController {
-  constructor(container, pointsModel) {
+  constructor(container, pointsModel, handler) {
     this._container = container;
+    this._menuComponent = new MenuComponent();
+    this._handler = handler;
+
     this._pointsModel = pointsModel;
   }
 
   render(sortedEvents) {
-    const infoComponent = new InfoComponent(sortedEvents);
-    const infoElement = infoComponent.getElement();
-    render(this._container, infoComponent, RenderPosition.AFTER_BEGIN);
+    this._infoComponent = new InfoComponent(sortedEvents);
+    const infoElement = this._infoComponent.getElement();
+    render(this._container, this._infoComponent, RenderPosition.AFTER_BEGIN);
 
     const totalPrice = sortedEvents.reduce((sum, evnt) => {
       return sum + evnt.events.reduce((sumDay, event) => {
@@ -26,9 +29,14 @@ class HeaderController {
     render(infoElement, new PriceComponent(totalPrice), RenderPosition.BEFORE_END);
 
     const filtersHeader = tripControls.querySelectorAll(`h2`)[1];
-    render(filtersHeader, new MenuComponent(), RenderPosition.BEFORE);
+    render(filtersHeader, this._menuComponent, RenderPosition.BEFORE);
+    this._menuComponent.setOnModeChange(this._handler);
     const filtersController = new FiltersController(tripControls, this._pointsModel);
     filtersController.render();
+  }
+
+  toggleMode(menuItem) {
+    this._menuComponent.setActiveItem(menuItem);
   }
 }
 
