@@ -10,6 +10,10 @@ class Points {
     this._filterChangeHandlers = [];
   }
 
+  getPointsNotFiltered() {
+    return this._points;
+  }
+
   getPoints() {
     return getPointsByFilter(this._points, this._activeFilterType);
   }

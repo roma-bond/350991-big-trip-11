@@ -9,9 +9,11 @@ const getRoute = (events) => {
       cities.push(event.destination);
     });
   });
-  const route = cities.filter((city, i) => {
+  let route = cities.filter((city, i) => {
     return (((i > 0) && (city !== cities[i - 1])) || (i === 0));
-  }).join(` &mdash; `);
+  });
+
+  route = (route.length <= 3) ? route.join(` &mdash; `) : `${route[0]} &mdash; ... &mdash; ${route[route.length - 1]}`;
   return route;
 };
 
