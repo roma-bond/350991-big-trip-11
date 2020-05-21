@@ -5,20 +5,19 @@ import {MenuItem} from "./components/site-menu.js";
 import {default as generateEvents} from './mock/event.js';
 
 const setOnModeChange = (menuItem) => {
+  headerController.toggleMode(menuItem);
   switch (menuItem) {
     case MenuItem.TABLE:
-      headerController.toggleMode(menuItem);
       tripController.renderTable();
       break;
 
     case MenuItem.STATISTICS:
-      headerController.toggleMode(menuItem);
       tripController.renderStats();
       break;
   }
 };
 
-const EVENT_COUNT = 20;
+const EVENT_COUNT = 4;
 const events = generateEvents(EVENT_COUNT);
 const pointsModel = new PointsModel();
 pointsModel.setPoints(events);

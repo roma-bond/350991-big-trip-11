@@ -87,7 +87,7 @@ class TripController {
 
   renderTable() {
     this._statsComponent.hide();
-    this._updatePoints();
+    this._removePoints();
 
     if (this._sortedEvents.length === 0) {
       render(this._container, this._noTasksComponent, RenderPosition.BEFORE_END);
