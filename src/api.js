@@ -31,7 +31,7 @@ class API {
     return this._load({
       url: `points/${id}`,
       method: Method.PUT,
-      body: JSON.stringify(data.toRaw()),
+      body: JSON.stringify(data),
       headers: new Headers({"Content-Type": `application/json`})
     })
       .then((response) => response.json())

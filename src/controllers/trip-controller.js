@@ -201,7 +201,8 @@ class TripController {
       this._pointsModel.removePoint(oldData.id);
       this._updatePoints();
     } else {
-      this._api.updateEvent(oldData.id, newData)
+      // newData.id = oldData.id;
+      this._api.updateEvent(oldData.id, newData.toRaw())
         .then((pointModel) => {
           const isSuccess = this._pointsModel.updatePoint(oldData.id, pointModel);
 
