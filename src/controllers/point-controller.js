@@ -1,6 +1,7 @@
-import EditComponent from '../components/edit.js';
-import EventComponent from '../components/event.js';
-import {RenderPosition, render, replace, remove} from '../utils/render.js';
+import EditComponent from "../components/edit.js";
+import EventComponent from "../components/event.js";
+import PointModel from "../models/point.js";
+import {RenderPosition, render, replace, remove} from "../utils/render.js";
 
 export const Mode = {
   ADDING: `adding`,
@@ -24,6 +25,38 @@ export const EmptyPoint = {
   offers: [],
   destination: ``,
   destinationInfo: {info: [], photos: 0}
+};
+
+const parseFormData = (form) => {
+  let eventType = form.querySelector(`.event__type-icon`).src.split(`/`).pop().split(`.`)[0];
+  eventType = (eventType !== `check`) ? eventType : `check-in`;
+
+  const timeFrom = new Date(document.querySelector(`[name^="event-start-time"]`).value);
+  const timeTo = new Date(document.querySelector(`[name^="event-end-time"]`).value);
+
+  return new PointModel({
+    "is_favorite": false,
+    "base_price": form.querySelector(`.event__input--price`).value,
+    "type": eventType,
+    "offers": Array.from(form.querySelectorAll(`.event__offer-selector`)).map((el) => {
+      return {
+        title: el.querySelector(`.event__offer-title`).innerText,
+        price: el.querySelector(`.event__offer-price`).innerText
+      };
+    }),
+    "destination": {
+      "description": form.querySelector(`.event__destination-description`).innerText,
+      "name": form.querySelector(`.event__input--destination`).value,
+      "pictures": Array.from(form.querySelector(`.event__photos-tape`).children).map((el) => {
+        return {
+          src: el.src,
+          description: el.alt
+        };
+      })
+    },
+    "date_from": timeFrom.toISOString(),
+    "date_to": timeTo.toISOString()
+  });
 };
 
 class PointController {
@@ -51,7 +84,7 @@ class PointController {
       replace(this._editComponent, this._eventComponent);
       this._mode = Mode.EDIT;
       document.addEventListener(`keydown`, this._onEscKeyDown);
-      this._editComponent.getData();
+      this._editComponent.getElement();
     });
 
     this._editComponent.setCloseButtonClickHandler(() => {
@@ -61,16 +94,18 @@ class PointController {
 
     this._editComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
-      const data = this._editComponent.getData();
+      const form = this._editComponent.getElement();
+      const data = parseFormData(form);
       this._onDataChange(this, event, data);
     });
 
     this._editComponent.setDeleteButtonClickHandler(() => this._onDataChange(this, event, null));
 
     this._editComponent.setFavoritesButtonClickHandler(() => {
-      this._onDataChange(this, event, Object.assign({}, event, {
-        isFavorite: !event.isFavorite,
-      }));
+      const newEvent = PointModel.clone(event);
+      newEvent.isFavorite = !newEvent.isFavorite;
+
+      this._onDataChange(this, event, newEvent);
     });
 
     switch (mode) {

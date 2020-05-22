@@ -1,7 +1,7 @@
-import {getRandomArrayItems} from '../utils/common.js';
-import {getRandomBoolean} from '../utils/common.js';
+import {getRandomArrayItems} from "../utils/common.js";
+import {getRandomBoolean} from "../utils/common.js";
 import AbstractSmartComponent from "./abstract-smart-component.js";
-import {EVENT_TYPES, CITIES, offersToType} from '../mock/const.js';
+import {EVENT_TYPES, CITIES, offersToType} from "../mock/const.js";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
 
@@ -69,11 +69,7 @@ const getOffersMarkup = (offers) => {
 };
 
 const getDestinationPhotosMarkup = (photos) => {
-  let markup = ``;
-  for (let i = 0; i < photos; i++) {
-    markup += `<img class="event__photo" src="http://picsum.photos/248/152?r=${Math.random()}" alt="Event photo">`;
-  }
-  return markup;
+  return photos.reduce((markup, photo) => markup + `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`, ``);
 };
 
 const getEventEditMarkup = (event) => {
@@ -156,7 +152,7 @@ const getEventEditMarkup = (event) => {
 
         <section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${event.destinationInfo.info.join(`. `)}.</p>
+          <p class="event__destination-description">${event.destinationInfo.info}.</p>
 
           <div class="event__photos-container">
             <div class="event__photos-tape">
@@ -167,40 +163,6 @@ const getEventEditMarkup = (event) => {
       </section>
     </form>`
   );
-};
-
-const parseFormData = (form) => {
-  let eventType = form.querySelector(`.event__type-icon`).src.split(`/`).pop().split(`.`)[0];
-  eventType = eventType[0].toUpperCase() + eventType.slice(1);
-  eventType = (eventType !== `Check-in`) ? eventType : `Check`;
-  const eventGroup = EVENT_TYPES.find((it) => {
-    return it.type === eventType;
-  }).group;
-
-  return {
-    offers: Array.from(form.querySelectorAll(`.event__offer-selector`)).map((el) => {
-      return {
-        title: el.querySelector(`.event__offer-title`).innerText,
-        price: el.querySelector(`.event__offer-price`).innerText
-      };
-    }),
-    destination: form.querySelector(`.event__input--destination`).value,
-    price: form.querySelector(`.event__input--price`).value,
-    time:
-      {
-        start: new Date(document.querySelector(`[name^="event-start-time"]`).value),
-        end: new Date(document.querySelector(`[name^="event-end-time"]`).value),
-      },
-    type:
-      {
-        type: eventType,
-        group: eventGroup
-      },
-    destinationInfo: {
-      info: Array.from(form.querySelector(`.event__destination-description`).innerText.split(`. `)),
-      photos: form.querySelector(`.event__photos-tape`).length,
-    }
-  };
 };
 
 class Edit extends AbstractSmartComponent {
@@ -249,11 +211,6 @@ class Edit extends AbstractSmartComponent {
     this.setSubmitHandler(this._submitHandler);
     this.setDeleteButtonClickHandler(this._deleteButtonClickHandler);
     this._subscribeOnEvents();
-  }
-
-  getData() {
-    const form = this.getElement();
-    return parseFormData(form);
   }
 
   setDeleteButtonClickHandler(handler) {

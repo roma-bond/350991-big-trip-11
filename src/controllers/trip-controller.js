@@ -65,12 +65,13 @@ const renderEvents = (userSortedEvents, daysListElement, sortType, onDataChange,
 };
 
 class TripController {
-  constructor(container, pointsModel) {
+  constructor(container, pointsModel, api) {
     this._container = container;
     this._pointsModel = pointsModel;
+    this._api = api;
 
     this._showedPointControllers = [];
-    this._sortedEvents = this._sortEvents();
+    this._sortedEvents = [];
 
     this._noTasksComponent = new NoEventsComponent();
     this._sortComponent = new SortComponent();
@@ -86,6 +87,7 @@ class TripController {
   }
 
   renderTable() {
+    this._sortEvents();
     this._statsComponent.hide();
     this._removePoints();
 
@@ -139,6 +141,8 @@ class TripController {
         sortedEvents = sortEventsPerDay(pointsCopy);
         break;
     }
+
+    this._sortedEvents = sortedEvents;
     return sortedEvents;
   }
 
@@ -197,11 +201,15 @@ class TripController {
       this._pointsModel.removePoint(oldData.id);
       this._updatePoints();
     } else {
-      const isSuccess = this._pointsModel.updatePoint(oldData.id, newData);
+      // newData.id = oldData.id;
+      this._api.updateEvent(oldData.id, newData.toRaw())
+        .then((pointModel) => {
+          const isSuccess = this._pointsModel.updatePoint(oldData.id, pointModel);
 
-      if (isSuccess) {
-        pointController.render(newData, PointControllerMode.DEFAULT);
-      }
+          if (isSuccess) {
+            pointController.render(pointModel, PointControllerMode.DEFAULT);
+          }
+        });
     }
   }
 

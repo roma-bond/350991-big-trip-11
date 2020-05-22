@@ -1,8 +1,11 @@
+import API from "./api.js";
 import HeaderController from "./controllers/header-controller.js";
-import TripController from "./controllers/trip-controller.js";
 import PointsModel from "./models/points.js";
+import TripController from "./controllers/trip-controller.js";
 import {MenuItem} from "./components/site-menu.js";
-import {default as generateEvents} from './mock/event.js';
+
+const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAo=`;
+const END_POINT = `https://11.ecmascript.pages.academy/big-trip`;
 
 const setOnModeChange = (menuItem) => {
   headerController.toggleMode(menuItem);
@@ -17,20 +20,23 @@ const setOnModeChange = (menuItem) => {
   }
 };
 
-const EVENT_COUNT = 4;
-const events = generateEvents(EVENT_COUNT);
+const api = new API(END_POINT, AUTHORIZATION);
 const pointsModel = new PointsModel();
-pointsModel.setPoints(events);
 
 const tripEventsElement = document.querySelector(`.trip-events`);
-const tripController = new TripController(tripEventsElement, pointsModel);
-tripController.renderTable();
+const tripController = new TripController(tripEventsElement, pointsModel, api);
 
 const tripMainElement = document.querySelector(`.trip-main`);
 const headerController = new HeaderController(tripMainElement, pointsModel, setOnModeChange);
-headerController.render(tripController.getSortedEvents());
 
 const addEventButton = document.querySelector(`.trip-main__event-add-btn`);
 addEventButton.addEventListener(`click`, () => {
   tripController.createEvent();
 });
+
+api.getEvents()
+  .then((events) => {
+    pointsModel.setPoints(events);
+    tripController.renderTable();
+    headerController.render(tripController.getSortedEvents());
+  });
