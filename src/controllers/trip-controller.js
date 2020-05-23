@@ -184,24 +184,34 @@ class TripController {
 
   _onDataChange(pointController, oldData, newData) {
     if (oldData === EmptyPoint) {
-      this._creatingPoint = null;
       if (newData === null) {
         pointController.destroy();
         this._updatePonts();
       } else {
         newData.id = String(new Date() + Math.random());
-        this._pointsModel.addPoint(newData);
-        this._sortedEvents = this._sortEvents();
-        this._creatingEvent = null;
-        let sortType = this._sortComponent.getSortType();
-        this._removePoints();
-        this._renderPoints(this._sortEvents(sortType), sortType);
+        this._api.createEvent(newData.toRaw())
+          .then((pointModel) => {
+            this._pointsModel.addPoint(pointModel);
+            this._sortedEvents = this._sortEvents();
+            this._creatingEvent = null;
+            let sortType = this._sortComponent.getSortType();
+            this._removePoints();
+            this._renderPoints(this._sortEvents(sortType), sortType);
+          })
+          .catch(() => {
+            pointController.shake();
+          });
       }
     } else if (newData === null) {
-      this._pointsModel.removePoint(oldData.id);
-      this._updatePoints();
+      this._api.deleteEvent(oldData.id)
+        .then(() => {
+          this._pointsModel.removePoint(oldData.id);
+          this._updatePoints();
+        })
+        .catch(() => {
+          pointController.shake();
+        });
     } else {
-      // newData.id = oldData.id;
       this._api.updateEvent(oldData.id, newData.toRaw())
         .then((pointModel) => {
           const isSuccess = this._pointsModel.updatePoint(oldData.id, pointModel);
@@ -209,7 +219,11 @@ class TripController {
           if (isSuccess) {
             pointController.render(pointModel, PointControllerMode.DEFAULT);
           }
+        })
+        .catch(() => {
+          pointController.shake();
         });
+
     }
   }
 

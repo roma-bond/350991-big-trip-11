@@ -3,6 +3,8 @@ import EventComponent from "../components/event.js";
 import PointModel from "../models/point.js";
 import {RenderPosition, render, replace, remove} from "../utils/render.js";
 
+const SHAKE_ANIMATION_TIMEOUT = 600;
+
 export const Mode = {
   ADDING: `adding`,
   DEFAULT: `default`,
@@ -24,7 +26,7 @@ export const EmptyPoint = {
   price: 0,
   offers: [],
   destination: ``,
-  destinationInfo: {info: [], photos: 0}
+  destinationInfo: {info: [], photos: []}
 };
 
 const parseFormData = (form) => {
@@ -35,7 +37,7 @@ const parseFormData = (form) => {
   const timeTo = new Date(document.querySelector(`[name^="event-end-time"]`).value);
 
   return new PointModel({
-    "is_favorite": false,
+    "is_favorite": form.querySelector(`.event__favorite-checkbox`).checked,
     "base_price": form.querySelector(`.event__input--price`).value,
     "type": eventType,
     "offers": Array.from(form.querySelectorAll(`.event__offer-selector`)).map((el) => {
@@ -97,15 +99,17 @@ class PointController {
       const form = this._editComponent.getElement();
       const data = parseFormData(form);
       this._onDataChange(this, event, data);
+
+      this._editComponent.setData({
+        saveButtonText: `Saving...`,
+      });
     });
 
-    this._editComponent.setDeleteButtonClickHandler(() => this._onDataChange(this, event, null));
-
-    this._editComponent.setFavoritesButtonClickHandler(() => {
-      const newEvent = PointModel.clone(event);
-      newEvent.isFavorite = !newEvent.isFavorite;
-
-      this._onDataChange(this, event, newEvent);
+    this._editComponent.setDeleteButtonClickHandler(() => {
+      this._editComponent.setData({
+        deleteButtonText: `Deleting...`,
+      });
+      this._onDataChange(this, event, null);
     });
 
     switch (mode) {
@@ -139,6 +143,21 @@ class PointController {
     remove(this._eventComponent);
     remove(this._editComponent);
     document.removeEventListener(`keydown`, this._onEscKeyDown);
+  }
+
+  shake() {
+    this._editComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    this._eventComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+
+    setTimeout(() => {
+      this._editComponent.getElement().style.animation = ``;
+      this._eventComponent.getElement().style.animation = ``;
+
+      this._editComponent.setData({
+        saveButtonText: `Save`,
+        deleteButtonText: `Delete`,
+      });
+    }, SHAKE_ANIMATION_TIMEOUT);
   }
 
   _onEscKeyDown(evt) {
