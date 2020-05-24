@@ -8,7 +8,7 @@ import {RenderPosition, render, remove} from '../utils/render.js';
 
 const sortEventsPerDay = (events) => {
   const eventsCopy = events.slice();
-  let sorted = [];
+  const sorted = [];
   eventsCopy.sort((a, b) => {
     return a.time.start - b.time.start;
   }).forEach((evt) => {
@@ -95,7 +95,7 @@ class TripController {
       render(this._container, this._noTasksComponent, RenderPosition.BEFORE_END);
     } else {
       this._renderPointsList();
-      let sortType = this._sortComponent.getSortType();
+      const sortType = this._sortComponent.getSortType();
       this._renderPoints(this._sortEvents(sortType), sortType);
     }
     this._sortComponent.show();
@@ -193,7 +193,7 @@ class TripController {
             this._pointsModel.addPoint(pointModel);
             this._sortedEvents = this._sortEvents();
             this._creatingEvent = null;
-            let sortType = this._sortComponent.getSortType();
+            const sortType = this._sortComponent.getSortType();
             this._removePoints();
             this._renderPoints(this._sortEvents(sortType), sortType);
           })

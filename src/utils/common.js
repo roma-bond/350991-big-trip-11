@@ -62,10 +62,10 @@ const getRandomArrayItem = (array) => {
 
 const getRandomArrayItems = function (array, max) {
   const arrayCopy = array.slice();
-  let selection = [];
+  const selection = [];
   const selectionLength = max ? Math.min(max, arrayCopy.length) : getRandomInteger(0, arrayCopy.length);
   for (let i = 0; i < selectionLength; i++) {
-    let selectionElement = arrayCopy.splice(getRandomInteger(0, arrayCopy.length - 1), 1)[0];
+    const selectionElement = arrayCopy.splice(getRandomInteger(0, arrayCopy.length - 1), 1)[0];
     selection.push(selectionElement);
   }
 

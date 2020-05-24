@@ -279,7 +279,7 @@ class Edit extends AbstractSmartComponent {
     element.querySelectorAll(`.event__type-input`).forEach((evtType) => {
       evtType.addEventListener(`change`, (evt) => {
         const type = evt.target.value;
-        let newType = {};
+        const newType = {};
         newType.type = type[0].toUpperCase() + type.slice(1);
         newType.group = EVENT_TYPES.filter((it) => it.type === newType.type)[0].group;
         this._event.type = newType;
