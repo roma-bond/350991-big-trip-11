@@ -96,8 +96,11 @@ class PointController {
 
     this._editComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
+      evt.target.querySelector(`.event__input--destination`).setCustomValidity(``);
+
       const form = this._editComponent.getElement();
       const data = parseFormData(form);
+
       this._onDataChange(this, event, data);
 
       this._editComponent.setData({

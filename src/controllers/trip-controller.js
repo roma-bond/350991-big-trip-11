@@ -188,7 +188,6 @@ class TripController {
         pointController.destroy();
         this._updatePonts();
       } else {
-        newData.id = String(new Date() + Math.random());
         this._api.createEvent(newData.toRaw())
           .then((pointModel) => {
             this._pointsModel.addPoint(pointModel);
