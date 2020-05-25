@@ -3,7 +3,7 @@ import {castTimeFormat} from '../utils/common.js';
 import AbstractComponent from "./abstract-component.js";
 
 const getRoute = (events) => {
-  let cities = [];
+  const cities = [];
   events.forEach((eventsGroup) => {
     eventsGroup.events.forEach((event) => {
       cities.push(event.destination);
@@ -20,7 +20,7 @@ const getRoute = (events) => {
 const getInfoMarkup = (sortedEvents) => {
   let infoContents = ``;
   if (sortedEvents.length > 0) {
-    let sorted = sortedEvents.slice();
+    const sorted = sortedEvents.slice();
     const startDate = sorted[0].date;
     const startDay = startDate.getDate();
     const startMonth = integerToMonth[castTimeFormat(startDate.getMonth() + 1)];

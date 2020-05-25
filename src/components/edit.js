@@ -5,6 +5,11 @@ import {EVENT_TYPES, CITIES, offersToType} from "../mock/const.js";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
 
+const DefaultData = {
+  deleteButtonText: `Delete`,
+  saveButtonText: `Save`,
+};
+
 const getTypeGroups = (types) => {
   const groups = types.map((type) => type.group);
   return groups.filter((group, i) => {
@@ -72,7 +77,7 @@ const getDestinationPhotosMarkup = (photos) => {
   return photos.reduce((markup, photo) => markup + `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`, ``);
 };
 
-const getEventEditMarkup = (event) => {
+const getEventEditMarkup = (event, externalData) => {
   const eventType = (event.type.type !== `Check`) ? event.type.type : `Check-in`;
 
   const title = (event.type.group === `Activity`) ? `${eventType} in` : `${eventType} to`;
@@ -81,6 +86,9 @@ const getEventEditMarkup = (event) => {
   const destinationPhotosMarkup = getDestinationPhotosMarkup(event.destinationInfo.photos);
   const isFavorite = event.isFavorite ? `checked` : ``;
   const destinationList = getEventDestinationListMarkup(CITIES);
+
+  const deleteButtonText = externalData.deleteButtonText;
+  const saveButtonText = externalData.saveButtonText;
 
   return (
     `<form class="trip-events__item  event  event--edit" action="#" method="post">
@@ -100,7 +108,7 @@ const getEventEditMarkup = (event) => {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${title}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${event.destination}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${event.destination}" list="destination-list-1" required>
           <datalist id="destination-list-1">
             ${destinationList}
           </datalist>
@@ -126,8 +134,8 @@ const getEventEditMarkup = (event) => {
           <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" step="0.01" value="${event.price}">
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Delete</button>
+        <button class="event__save-btn  btn  btn--blue" type="submit">${saveButtonText}</button>
+        <button class="event__reset-btn" type="reset">${deleteButtonText}</button>
 
         <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${isFavorite}>
         <label class="event__favorite-btn" for="event-favorite-1">
@@ -171,11 +179,11 @@ class Edit extends AbstractSmartComponent {
 
     this._event = event;
     this._element = null;
+    this._externalData = DefaultData;
     this._flatpickrStart = null;
     this._flatpickrEnd = null;
     this._submitHandler = null;
     this._setCloseButtonClickHandler = null;
-    this._setFavoritesButtonClickHandler = null;
     this._setTypeChoiceHandler = null;
     this._deleteButtonClickHandler = null;
 
@@ -204,7 +212,7 @@ class Edit extends AbstractSmartComponent {
   }
 
   getTemplate() {
-    return getEventEditMarkup(this._event);
+    return getEventEditMarkup(this._event, this._externalData);
   }
 
   recoveryListeners() {
@@ -220,6 +228,11 @@ class Edit extends AbstractSmartComponent {
     this._deleteButtonClickHandler = handler;
   }
 
+  setData(data) {
+    this._externalData = Object.assign({}, DefaultData, data);
+    this.rerender();
+  }
+
   setSubmitHandler(handler) {
     this.getElement().addEventListener(`submit`, handler);
     this._submitHandler = handler;
@@ -229,12 +242,6 @@ class Edit extends AbstractSmartComponent {
     const closeButton = this.getElement().querySelector(`.event__rollup-btn`);
     closeButton.addEventListener(`click`, handler);
     this._setCloseButtonClickHandler = handler;
-  }
-
-  setFavoritesButtonClickHandler(handler) {
-    this.getElement().querySelector(`.event__favorite-btn`)
-      .addEventListener(`click`, handler);
-    this._setFavoritesButtonClickHandler = handler;
   }
 
   _applyFlatpickr() {
@@ -272,7 +279,7 @@ class Edit extends AbstractSmartComponent {
     element.querySelectorAll(`.event__type-input`).forEach((evtType) => {
       evtType.addEventListener(`change`, (evt) => {
         const type = evt.target.value;
-        let newType = {};
+        const newType = {};
         newType.type = type[0].toUpperCase() + type.slice(1);
         newType.group = EVENT_TYPES.filter((it) => it.type === newType.type)[0].group;
         this._event.type = newType;

@@ -28,7 +28,7 @@ class Point {
     this.destinationInfo = getInfo(data[`destination`][`description`], data[`destination`][`pictures`]);
     this.price = data[`base_price`];
     this.offers = data[`offers`];
-    this.isFavorite = data[`is_offers`] || false;
+    this.isFavorite = data[`is_favorite`] || false;
   }
 
   toRaw() {
@@ -64,7 +64,7 @@ class Point {
   }
 
   static clone(data) {
-    return new Point(data.toRaw());
+    return new Point(data);
   }
 }
 

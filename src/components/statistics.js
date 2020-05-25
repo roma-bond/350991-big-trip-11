@@ -243,7 +243,7 @@ const renderTransportChart = (ctx, events) => {
 
 const renderTimeChart = (ctx, events) => {
   let eventsLabels = [];
-  let eventsData = [];
+  const eventsData = [];
   events.forEach((event) => {
     eventsLabels.push(event.destination);
     const duration = getDuration(event.time);
