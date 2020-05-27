@@ -6,20 +6,23 @@ import NoEventsComponent from "../components/no-events.js";
 import StatsComponent from '../components/statistics.js';
 import {RenderPosition, render, remove} from '../utils/render.js';
 
+const DATE_FIRST_CHAR_INDEX = 16;
+const DATE_LAST_CHAR_INDEX = 21;
+
 const sortEventsPerDay = (events) => {
   const eventsCopy = events.slice();
-  const sorted = [];
+  const sortedEvents = [];
   eventsCopy.sort((a, b) => {
     return a.time.start - b.time.start;
-  }).forEach((evt) => {
-    const eventDate = evt.time.start.toString().slice(4, 15);
-    if ((sorted.length === 0) || (sorted[sorted.length - 1].date.toString().slice(4, 15) !== eventDate)) {
-      sorted.push({'date': evt.time.start, 'events': [evt]});
+  }).forEach((event) => {
+    const eventDate = event.time.start.toString().slice(DATE_FIRST_CHAR_INDEX, DATE_LAST_CHAR_INDEX);
+    if ((sortedEvents.length === 0) || (sortedEvents[sortedEvents.length - 1].date.toString().slice(DATE_FIRST_CHAR_INDEX, DATE_LAST_CHAR_INDEX) !== eventDate)) {
+      sortedEvents.push({'date': event.time.start, 'events': [event]});
     } else {
-      sorted[sorted.length - 1].events.push(evt);
+      sortedEvents[sortedEvents.length - 1].events.push(event);
     }
   });
-  return sorted;
+  return sortedEvents;
 };
 
 const renderEventsPerDay = (day, eventsList, onDataChange, onViewChange) => {
@@ -124,6 +127,7 @@ class TripController {
     render(this._daysListComponent.getElement(), dayComponent, RenderPosition.AFTER_BEGIN);
     this._creatingEvent = new PointController(tripDayEventsList, this._onDataChange, this._onViewChange);
     this._creatingEvent.render(EmptyPoint, PointControllerMode.ADDING);
+    this._showedPointControllers.push(this._creatingEvent);
   }
 
   _sortEvents(sortType = SortType.DEFAULT) {
@@ -182,13 +186,13 @@ class TripController {
     this._showedPointControllers = renderEvents(points, daysListElement, sort, this._onDataChange, this._onViewChange);
   }
 
-  _onDataChange(pointController, oldData, newData) {
-    if (oldData === EmptyPoint) {
-      if (newData === null) {
+  _onDataChange(pointController, oldEvent, newEvent) {
+    if (oldEvent === EmptyPoint) {
+      if (newEvent === null) {
         pointController.destroy();
-        this._updatePonts();
+        this._updatePoints();
       } else {
-        this._api.createEvent(newData.toRaw())
+        this._api.createEvent(newEvent.toRaw())
           .then((pointModel) => {
             this._pointsModel.addPoint(pointModel);
             this._sortedEvents = this._sortEvents();
@@ -201,19 +205,19 @@ class TripController {
             pointController.shake();
           });
       }
-    } else if (newData === null) {
-      this._api.deleteEvent(oldData.id)
+    } else if (newEvent === null) {
+      this._api.deleteEvent(oldEvent.id)
         .then(() => {
-          this._pointsModel.removePoint(oldData.id);
+          this._pointsModel.removePoint(oldEvent.id);
           this._updatePoints();
         })
         .catch(() => {
           pointController.shake();
         });
     } else {
-      this._api.updateEvent(oldData.id, newData.toRaw())
+      this._api.updateEvent(oldEvent.id, newEvent.toRaw())
         .then((pointModel) => {
-          const isSuccess = this._pointsModel.updatePoint(oldData.id, pointModel);
+          const isSuccess = this._pointsModel.updatePoint(oldEvent.id, pointModel);
 
           if (isSuccess) {
             pointController.render(pointModel, PointControllerMode.DEFAULT);
@@ -227,7 +231,7 @@ class TripController {
   }
 
   _onViewChange() {
-    this._showedPointControllers.forEach((it) => it.setDefaultView());
+    this._showedPointControllers.forEach((pointController) => pointController.setDefaultView());
   }
 
   _onFilterChange() {

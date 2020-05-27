@@ -30,7 +30,8 @@ const tripMainElement = document.querySelector(`.trip-main`);
 const headerController = new HeaderController(tripMainElement, pointsModel, setOnModeChange);
 
 const addEventButton = document.querySelector(`.trip-main__event-add-btn`);
-addEventButton.addEventListener(`click`, () => {
+addEventButton.addEventListener(`click`, (evt) => {
+  evt.target.disabled = true;
   tripController.createEvent();
 });
 

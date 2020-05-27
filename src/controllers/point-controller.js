@@ -40,19 +40,19 @@ const parseFormData = (form) => {
     "is_favorite": form.querySelector(`.event__favorite-checkbox`).checked,
     "base_price": form.querySelector(`.event__input--price`).value,
     "type": eventType,
-    "offers": Array.from(form.querySelectorAll(`.event__offer-selector`)).map((el) => {
+    "offers": Array.from(form.querySelectorAll(`.event__offer-selector`)).map((offerElement) => {
       return {
-        title: el.querySelector(`.event__offer-title`).innerText,
-        price: el.querySelector(`.event__offer-price`).innerText
+        title: offerElement.querySelector(`.event__offer-title`).innerText,
+        price: offerElement.querySelector(`.event__offer-price`).innerText
       };
     }),
     "destination": {
       "description": form.querySelector(`.event__destination-description`).innerText,
       "name": form.querySelector(`.event__input--destination`).value,
-      "pictures": Array.from(form.querySelector(`.event__photos-tape`).children).map((el) => {
+      "pictures": Array.from(form.querySelector(`.event__photos-tape`).children).map((photoElement) => {
         return {
-          src: el.src,
-          description: el.alt
+          src: photoElement.src,
+          description: photoElement.alt
         };
       })
     },
@@ -165,6 +165,7 @@ class PointController {
 
   _onEscKeyDown(evt) {
     const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
+    document.querySelector(`.trip-main__event-add-btn`).disabled = false;
 
     if (isEscKey) {
       if (this._mode === Mode.ADDING) {

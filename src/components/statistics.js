@@ -1,5 +1,6 @@
 import AbstractSmartComponent from "./abstract-smart-component.js";
 import {getDuration} from "../utils/common.js";
+import {TRANSFER_EVENT_TYPES, ACTIVITY_EVENT_TYPES} from "../mock/const.js";
 import Chart from "chart.js";
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
@@ -19,34 +20,34 @@ const renderMoneyChart = (ctx, events) => {
 
   events.forEach((event) => {
     switch (event.type.type) {
-      case `Flight`:
+      case TRANSFER_EVENT_TYPES.FLIGHT:
         price.fly += event.price;
         break;
-      case `Check`:
+      case ACTIVITY_EVENT_TYPES.CHECK:
         price.stay += event.price;
         break;
-      case `Drive`:
+      case TRANSFER_EVENT_TYPES.DRIVE:
         price.drive += event.price;
         break;
-      case `Sightseeing`:
+      case ACTIVITY_EVENT_TYPES.SIGHTSEEING:
         price.look += event.price;
         break;
-      case `Restaurant`:
+      case ACTIVITY_EVENT_TYPES.RESTAURANT:
         price.eat += event.price;
         break;
-      case `Transport`:
+      case TRANSFER_EVENT_TYPES.TRANSPORT:
         price.public += event.price;
         break;
-      case `Ship`:
+      case TRANSFER_EVENT_TYPES.SHIP:
         price.sail += event.price;
         break;
-      case `Bus`:
+      case TRANSFER_EVENT_TYPES.BUS:
         price.coach += event.price;
         break;
-      case `Train`:
+      case TRANSFER_EVENT_TYPES.TRAIN:
         price.transit += event.price;
         break;
-      case `Taxi`:
+      case TRANSFER_EVENT_TYPES.TAXI:
         price.ride += event.price;
         break;
     }
@@ -141,25 +142,25 @@ const renderTransportChart = (ctx, events) => {
 
   events.forEach((event) => {
     switch (event.type.type) {
-      case `Flight`:
+      case TRANSFER_EVENT_TYPES.FLIGHT:
         transport.fly += 1;
         break;
-      case `Drive`:
+      case TRANSFER_EVENT_TYPES.DRIVE:
         transport.drive += 1;
         break;
-      case `Transport`:
+      case TRANSFER_EVENT_TYPES.TRANSPORT:
         transport.public += 1;
         break;
-      case `Ship`:
+      case TRANSFER_EVENT_TYPES.SHIP:
         transport.sail += 1;
         break;
-      case `Bus`:
+      case TRANSFER_EVENT_TYPES.BUS:
         transport.coach += 1;
         break;
-      case `Train`:
+      case TRANSFER_EVENT_TYPES.TRAIN:
         transport.transit += 1;
         break;
-      case `Taxi`:
+      case TRANSFER_EVENT_TYPES.TAXI:
         transport.ride += 1;
         break;
     }

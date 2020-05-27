@@ -1,5 +1,8 @@
-import {getDuration} from '../utils/common.js';
 import AbstractComponent from "./abstract-component.js";
+import {getDuration} from '../utils/common.js';
+
+const TIME_FIRST_CHAR_INDEX = 16;
+const TIME_LAST_CHAR_INDEX = 21;
 
 const getOffersMarkup = (offers) => {
   return offers
@@ -22,9 +25,9 @@ const getEventMarkup = (event) => {
 
   const offersMarkup = getOffersMarkup(event.offers);
   const startDate = event.time.start.toISOString();
-  const startTime = event.time.start.toString().slice(16, 21);
+  const startTime = event.time.start.toString().slice(TIME_FIRST_CHAR_INDEX, TIME_LAST_CHAR_INDEX);
   const endDate = event.time.end.toISOString();
-  const endTime = event.time.end.toString().slice(16, 21);
+  const endTime = event.time.end.toString().slice(TIME_FIRST_CHAR_INDEX, TIME_LAST_CHAR_INDEX);
   const duration = getDuration(event.time);
 
   return (

@@ -26,7 +26,7 @@ class SiteMenu extends AbstractComponent {
   }
 
   setActiveItem(menuItem) {
-    this._displayModeButtons.forEach((el) => el.classList.remove(`trip-tabs__btn--active`));
+    this._displayModeButtons.forEach((button) => button.classList.remove(`trip-tabs__btn--active`));
     this._displayModeButtons[menuItem].classList.add(`trip-tabs__btn--active`);
   }
 
@@ -40,8 +40,8 @@ class SiteMenu extends AbstractComponent {
         return;
       }
 
-      const menuItem = this._displayModeButtons.findIndex((el) => {
-        return el === evt.target;
+      const menuItem = this._displayModeButtons.findIndex((button) => {
+        return button === evt.target;
       });
       handler(menuItem);
     });

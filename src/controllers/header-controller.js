@@ -20,8 +20,8 @@ class HeaderController {
     const infoElement = this._infoComponent.getElement();
     render(this._container, this._infoComponent, RenderPosition.AFTER_BEGIN);
 
-    const totalPrice = sortedEvents.reduce((sum, evnt) => {
-      return sum + evnt.events.reduce((sumDay, event) => {
+    const totalPrice = sortedEvents.reduce((sum, eventDay) => {
+      return sum + eventDay.events.reduce((sumDay, event) => {
         return sumDay + event.price;
       }, 0);
     }, 0);

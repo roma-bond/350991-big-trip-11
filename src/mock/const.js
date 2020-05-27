@@ -9,6 +9,18 @@ const EVENT_TYPES = [{group: `Transfer`, type: `Taxi`},
   {group: `Activity`, type: `Sightseeing`},
   {group: `Activity`, type: `Restaurant`}];
 
+const TRANSFER_EVENT_TYPES = {TAXI: `Taxi`,
+  BUS: `Bus`,
+  TRAIN: `Train`,
+  SHIP: `Ship`,
+  TRANSPORT: `Transport`,
+  DRIVE: `Drive`,
+  FLIGHT: `Flight`};
+
+const ACTIVITY_EVENT_TYPES = {CHECK: `Check`,
+  SIGHTSEEING: `Sightseeing`,
+  RESTAURANT: `Restaurant`};
+
 const CITIES = [`Amsterdam`, `Chamonix`, `Geneva`, `London`, `Rome`];
 const descriptionTemplate = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.`;
 const INFO = descriptionTemplate.split(`. `);
@@ -53,4 +65,4 @@ const FilterType = {
   PAST: `past`,
 };
 
-export {EVENT_TYPES, CITIES, offersToType, INFO, integerToMonth, FilterType};
+export {EVENT_TYPES, TRANSFER_EVENT_TYPES, ACTIVITY_EVENT_TYPES, CITIES, offersToType, INFO, integerToMonth, FilterType};

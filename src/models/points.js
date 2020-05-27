@@ -29,7 +29,7 @@ class Points {
   }
 
   updatePoint(id, point) {
-    const index = this._points.findIndex((it) => it.id === id);
+    const index = this._points.findIndex((pointElement) => pointElement.id === id);
 
     if (index === -1) {
       return false;
@@ -40,7 +40,7 @@ class Points {
   }
 
   removePoint(id) {
-    const index = this._points.findIndex((it) => it.id === id);
+    const index = this._points.findIndex((pointElement) => pointElement.id === id);
 
     if (index === -1) {
       return false;

@@ -1,11 +1,10 @@
-import {getRandomArrayItems} from "../utils/common.js";
-import {getRandomBoolean} from "../utils/common.js";
 import AbstractSmartComponent from "./abstract-smart-component.js";
+import {getRandomBoolean, getRandomArrayItems} from "../utils/common.js";
 import {EVENT_TYPES, CITIES, offersToType} from "../mock/const.js";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
 
-const DefaultData = {
+const DefaultText = {
   deleteButtonText: `Delete`,
   saveButtonText: `Save`,
 };
@@ -179,7 +178,7 @@ class Edit extends AbstractSmartComponent {
 
     this._event = event;
     this._element = null;
-    this._externalData = DefaultData;
+    this._externalData = DefaultText;
     this._flatpickrStart = null;
     this._flatpickrEnd = null;
     this._submitHandler = null;
@@ -228,8 +227,8 @@ class Edit extends AbstractSmartComponent {
     this._deleteButtonClickHandler = handler;
   }
 
-  setData(data) {
-    this._externalData = Object.assign({}, DefaultData, data);
+  setData(value) {
+    this._externalData = Object.assign({}, DefaultText, value);
     this.rerender();
   }
 
@@ -239,8 +238,8 @@ class Edit extends AbstractSmartComponent {
   }
 
   setCloseButtonClickHandler(handler) {
-    const closeButton = this.getElement().querySelector(`.event__rollup-btn`);
-    closeButton.addEventListener(`click`, handler);
+    const closeButtonElement = this.getElement().querySelector(`.event__rollup-btn`);
+    closeButtonElement.addEventListener(`click`, handler);
     this._setCloseButtonClickHandler = handler;
   }
 

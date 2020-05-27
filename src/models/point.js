@@ -1,13 +1,13 @@
 import {EVENT_TYPES} from "../mock/const.js";
 
-const getType = (str) => {
-  str = (str !== `check-in`) ? str : `check`;
-  return EVENT_TYPES.find((el) => el.type.toLowerCase() === str);
+const getType = (pointType) => {
+  pointType = (pointType !== `check-in`) ? pointType : `check`;
+  return EVENT_TYPES.find((eventType) => eventType.type.toLowerCase() === pointType);
 };
 
-const getTime = (from, to) => {
-  const start = from ? new Date(from) : null;
-  const end = to ? new Date(to) : null;
+const getTime = (startDate, endDate) => {
+  const start = startDate ? new Date(startDate) : null;
+  const end = endDate ? new Date(endDate) : null;
 
   return {start, end};
 };
@@ -55,16 +55,16 @@ class Point {
     };
   }
 
-  static parseEvent(data) {
-    return new Point(data);
+  static parseEvent(event) {
+    return new Point(event);
   }
 
-  static parseEvents(data) {
-    return data.map(Point.parseEvent);
+  static parseEvents(events) {
+    return events.map(Point.parseEvent);
   }
 
-  static clone(data) {
-    return new Point(data);
+  static clone(event) {
+    return new Point(event);
   }
 }
 

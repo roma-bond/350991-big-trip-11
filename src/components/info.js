@@ -45,15 +45,15 @@ const getInfoMarkup = (sortedEvents) => {
 };
 
 class Info extends AbstractComponent {
-  constructor(sorted) {
+  constructor(sortedEvents) {
     super();
 
-    this._sorted = sorted;
+    this._sortedEvents = sortedEvents;
     this._element = null;
   }
 
   getTemplate() {
-    return getInfoMarkup(this._sorted);
+    return getInfoMarkup(this._sortedEvents);
   }
 }
 
