@@ -64,7 +64,7 @@ const renderEvents = (userSortedEvents, daysListElement, sortType, onDataChange,
   if (sortType === SortType.DEFAULT) {
     pointControllers = renderDefaultSort(userSortedEvents, daysListElement, onDataChange, onViewChange, destinations, offers);
   } else {
-    pointControllers = renderUserSortedEvents(userSortedEvents, daysListElement, sortType,onDataChange, onViewChange, destinations, offers);
+    pointControllers = renderUserSortedEvents(userSortedEvents, daysListElement, sortType, onDataChange, onViewChange, destinations, offers);
   }
   return pointControllers;
 };
@@ -198,7 +198,6 @@ class TripController {
   _onViewChange() {
     this._showedPointControllers.forEach((pointController) => pointController.setDefaultView());
   }
-
 
   _removePoints() {
     this._showedPointControllers.forEach((eventController) => eventController.destroy());
