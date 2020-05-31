@@ -2,7 +2,7 @@ import FiltersController from '../controllers/filter.js';
 import InfoComponent from '../components/info.js';
 import PriceComponent from '../components/price.js';
 import MenuComponent from '../components/site-menu.js';
-import {RenderPosition, render} from '../utils/render.js';
+import {RenderPosition, render, remove} from '../utils/render.js';
 
 const tripControls = document.querySelector(`.trip-controls`);
 
@@ -11,11 +11,12 @@ class HeaderController {
     this._container = container;
     this._menuComponent = new MenuComponent();
     this._handler = handler;
+    this._infoComponent = null;
 
     this._pointsModel = pointsModel;
   }
 
-  render(sortedEvents) {
+  _renderInfo(sortedEvents) {
     this._infoComponent = new InfoComponent(sortedEvents);
     const infoElement = this._infoComponent.getElement();
     render(this._container, this._infoComponent, RenderPosition.AFTER_BEGIN);
@@ -27,12 +28,20 @@ class HeaderController {
     }, 0);
 
     render(infoElement, new PriceComponent(totalPrice), RenderPosition.BEFORE_END);
+  }
 
+  render(sortedEvents) {
+    this._renderInfo(sortedEvents);
     const filtersHeader = tripControls.querySelectorAll(`h2`)[1];
     render(filtersHeader, this._menuComponent, RenderPosition.BEFORE);
     this._menuComponent.setOnModeChange(this._handler);
     const filtersController = new FiltersController(tripControls, this._pointsModel);
     filtersController.render();
+  }
+
+  rerender(sortedEvents) {
+    remove(this._infoComponent);
+    this._renderInfo(sortedEvents);
   }
 
   toggleMode(menuItem) {

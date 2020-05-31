@@ -37,7 +37,7 @@ const parseFormData = (form) => {
   const timeTo = new Date(document.querySelector(`[name^="event-end-time"]`).value);
 
   return new PointModel({
-    "is_favorite": form.querySelector(`.event__favorite-checkbox`).checked,
+    "is_favorite": form.querySelector(`.event__favorite-checkbox`) ? form.querySelector(`.event__favorite-checkbox`).checked : false,
     "base_price": form.querySelector(`.event__input--price`).value,
     "type": eventType,
     "offers": Array.from(form.querySelectorAll(`.event__offer-selector`)).map((offerElement) => {
@@ -62,10 +62,12 @@ const parseFormData = (form) => {
 };
 
 class PointController {
-  constructor(container, onDataChange, onViewChange) {
+  constructor(container, onDataChange, onViewChange, destinations, offers) {
     this._container = container;
     this._onDataChange = onDataChange;
     this._onViewChange = onViewChange;
+    this._destinations = destinations;
+    this._offers = offers;
     this._mode = Mode.DEFAULT;
 
     this._eventComponent = null;
@@ -74,12 +76,13 @@ class PointController {
   }
 
   render(event, mode) {
+    const eventCopy = Object.assign({}, event);
     const oldEventComponent = this._eventComponent;
     const oldEditComponent = this._editComponent;
     this._mode = mode;
 
-    this._editComponent = new EditComponent(event);
-    this._eventComponent = new EventComponent(event);
+    this._editComponent = new EditComponent(eventCopy, this._mode, this._destinations, this._offers);
+    this._eventComponent = new EventComponent(eventCopy);
 
     this._eventComponent.setOpenButtonClickHandler(() => {
       this._onViewChange();
@@ -87,11 +90,6 @@ class PointController {
       this._mode = Mode.EDIT;
       document.addEventListener(`keydown`, this._onEscKeyDown);
       this._editComponent.getElement();
-    });
-
-    this._editComponent.setCloseButtonClickHandler(() => {
-      replace(this._eventComponent, this._editComponent);
-      this._mode = Mode.DEFAULT;
     });
 
     this._editComponent.setSubmitHandler((evt) => {
@@ -114,6 +112,13 @@ class PointController {
       });
       this._onDataChange(this, event, null);
     });
+
+    if (this._mode !== Mode.ADDING) {
+      this._editComponent.setCloseButtonClickHandler(() => {
+        replace(this._eventComponent, this._editComponent);
+        this._mode = Mode.DEFAULT;
+      });
+    }
 
     switch (mode) {
       case Mode.DEFAULT:
@@ -165,7 +170,6 @@ class PointController {
 
   _onEscKeyDown(evt) {
     const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
-    document.querySelector(`.trip-main__event-add-btn`).disabled = false;
 
     if (isEscKey) {
       if (this._mode === Mode.ADDING) {

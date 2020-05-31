@@ -4,6 +4,8 @@ import {FilterType} from "../mock/const.js";
 class Points {
   constructor() {
     this._points = [];
+    this._offers = [];
+    this._destinations = [];
     this._activeFilterType = FilterType.EVERYTHING;
 
     this._dataChangeHandlers = [];
@@ -21,6 +23,22 @@ class Points {
   setPoints(events) {
     this._points = Array.from(events);
     this._callHandlers(this._dataChangeHandlers);
+  }
+
+  getOffers() {
+    return this._offers;
+  }
+
+  setOffers(offers) {
+    this._offers = Array.from(offers);
+  }
+
+  getDestinations() {
+    return this._destinations;
+  }
+
+  setDestinations(destinations) {
+    this._destinations = Array.from(destinations);
   }
 
   setFilter(filterType) {

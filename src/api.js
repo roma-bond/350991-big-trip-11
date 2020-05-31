@@ -53,6 +53,16 @@ class API {
     return this._load({url: `points/${id}`, method: Method.DELETE});
   }
 
+  getDestinations() {
+    return this._load({url: `destinations`})
+      .then((response) => response.json());
+  }
+
+  getOffers() {
+    return this._load({url: `offers`})
+      .then((response) => response.json());
+  }
+
   _load({url, method = Method.GET, body = null, headers = new Headers()}) {
     headers.append(`Authorization`, this._authorization);
 

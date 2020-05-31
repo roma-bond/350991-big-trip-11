@@ -46,4 +46,8 @@ const remove = (component) => {
   component.removeElement();
 };
 
-export {RenderPosition, createElement, render, replace, remove};
+const removeChildrenElements = (element) => {
+  Array.from(element.children).forEach((childElement) => childElement.remove());
+};
+
+export {RenderPosition, createElement, render, replace, remove, removeChildrenElements};

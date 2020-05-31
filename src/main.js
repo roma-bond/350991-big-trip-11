@@ -13,7 +13,6 @@ const setOnModeChange = (menuItem) => {
     case MenuItem.TABLE:
       tripController.renderTable();
       break;
-
     case MenuItem.STATISTICS:
       tripController.renderStats();
       break;
@@ -24,16 +23,24 @@ const api = new API(END_POINT, AUTHORIZATION);
 const pointsModel = new PointsModel();
 
 const tripEventsElement = document.querySelector(`.trip-events`);
-const tripController = new TripController(tripEventsElement, pointsModel, api);
-
 const tripMainElement = document.querySelector(`.trip-main`);
 const headerController = new HeaderController(tripMainElement, pointsModel, setOnModeChange);
+const tripController = new TripController(tripEventsElement, pointsModel, api, headerController);
 
 const addEventButton = document.querySelector(`.trip-main__event-add-btn`);
-addEventButton.addEventListener(`click`, (evt) => {
-  evt.target.disabled = true;
+addEventButton.addEventListener(`click`, () => {
   tripController.createEvent();
 });
+
+api.getOffers()
+  .then((offers) => {
+    pointsModel.setOffers(offers);
+  });
+
+api.getDestinations()
+  .then((destinations) => {
+    pointsModel.setDestinations(destinations);
+  });
 
 api.getEvents()
   .then((events) => {
