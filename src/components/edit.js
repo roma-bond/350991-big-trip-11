@@ -352,7 +352,7 @@ class Edit extends AbstractSmartComponent {
   _subscribeOnEvents() {
     const priceElement = this._element.querySelector(`.event__input--price`);
     const destinationElement = this._element.querySelector(`.event__input--destination`);
-    let destinationsElement = this._destinations.map((destination) => destination.name);
+    const destinationsElement = this._destinations.map((destination) => destination.name);
     const offersSectionElement = this._element.querySelector(`.event__section--offers`);
 
     this._element.querySelectorAll(`.event__type-input`).forEach((evtType) => {

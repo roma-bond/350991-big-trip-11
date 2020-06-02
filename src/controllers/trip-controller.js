@@ -246,7 +246,7 @@ class TripController {
 
   _sortEvents(sortType = SortType.DEFAULT) {
     let sortedEvents = [];
-    let pointsCopy = this._pointsModel.getPoints().slice();
+    const pointsCopy = this._pointsModel.getPoints().slice();
 
     switch (sortType) {
       case SortType.TIME:
