@@ -12,49 +12,28 @@ class Points {
     this._filterChangeHandlers = [];
   }
 
-  getPointsNotFiltered() {
-    return this._points;
-  }
-
-  getPoints() {
-    return getPointsByFilter(this._points, this._activeFilterType);
-  }
-
-  setPoints(events) {
-    this._points = Array.from(events);
-    this._callHandlers(this._dataChangeHandlers);
-  }
-
-  getOffers() {
-    return this._offers;
-  }
-
-  setOffers(offers) {
-    this._offers = Array.from(offers);
+  addPoint(event) {
+    this._points = [].concat(event, this._points);
   }
 
   getDestinations() {
     return this._destinations;
   }
 
-  setDestinations(destinations) {
-    this._destinations = Array.from(destinations);
+  getActiveFilterType() {
+    return this._activeFilterType;
   }
 
-  setFilter(filterType) {
-    this._activeFilterType = filterType;
-    this._callHandlers(this._filterChangeHandlers);
+  getOffers() {
+    return this._offers;
   }
 
-  updatePoint(id, point) {
-    const index = this._points.findIndex((pointElement) => pointElement.id === id);
+  getPoints() {
+    return getPointsByFilter(this._points, this._activeFilterType);
+  }
 
-    if (index === -1) {
-      return false;
-    }
-
-    this._points = [].concat(this._points.slice(0, index), point, this._points.slice(index + 1));
-    return true;
+  getPointsNotFiltered() {
+    return this._points;
   }
 
   removePoint(id) {
@@ -68,8 +47,22 @@ class Points {
     return true;
   }
 
-  addPoint(event) {
-    this._points = [].concat(event, this._points);
+  setDestinations(destinations) {
+    this._destinations = Array.from(destinations);
+  }
+
+  setFilter(filterType) {
+    this._activeFilterType = filterType;
+    this._callHandlers(this._filterChangeHandlers);
+  }
+
+  setOffers(offers) {
+    this._offers = Array.from(offers);
+  }
+
+  setPoints(events) {
+    this._points = Array.from(events);
+    this._callHandlers(this._dataChangeHandlers);
   }
 
   setFilterChangeHandler(handler) {
@@ -78,6 +71,17 @@ class Points {
 
   setDataChangeHandler(handler) {
     this._dataChangeHandlers.push(handler);
+  }
+
+  updatePoint(id, point) {
+    const index = this._points.findIndex((pointElement) => pointElement.id === id);
+
+    if (index === -1) {
+      return false;
+    }
+
+    this._points = [].concat(this._points.slice(0, index), point, this._points.slice(index + 1));
+    return true;
   }
 
   _callHandlers(handlers) {

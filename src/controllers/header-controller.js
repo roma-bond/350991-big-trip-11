@@ -12,8 +12,28 @@ class HeaderController {
     this._menuComponent = new MenuComponent();
     this._handler = handler;
     this._infoComponent = null;
+    this._filtersController = null;
 
     this._pointsModel = pointsModel;
+  }
+
+  render(sortedEvents) {
+    this._renderInfo(sortedEvents);
+    const filtersHeader = tripControls.querySelectorAll(`h2`)[1];
+    render(filtersHeader, this._menuComponent, RenderPosition.BEFORE);
+    this._menuComponent.setOnModeChange(this._handler);
+    this._filtersController = new FiltersController(tripControls, this._pointsModel);
+    this._filtersController.render();
+  }
+
+  rerender(sortedEvents) {
+    remove(this._infoComponent);
+    this._filtersController.removeFilterComponent();
+    this.render(sortedEvents);
+  }
+
+  toggleMode(menuItem) {
+    this._menuComponent.setActiveItem(menuItem);
   }
 
   _renderInfo(sortedEvents) {
@@ -28,24 +48,6 @@ class HeaderController {
     }, 0);
 
     render(infoElement, new PriceComponent(totalPrice), RenderPosition.BEFORE_END);
-  }
-
-  render(sortedEvents) {
-    this._renderInfo(sortedEvents);
-    const filtersHeader = tripControls.querySelectorAll(`h2`)[1];
-    render(filtersHeader, this._menuComponent, RenderPosition.BEFORE);
-    this._menuComponent.setOnModeChange(this._handler);
-    const filtersController = new FiltersController(tripControls, this._pointsModel);
-    filtersController.render();
-  }
-
-  rerender(sortedEvents) {
-    remove(this._infoComponent);
-    this._renderInfo(sortedEvents);
-  }
-
-  toggleMode(menuItem) {
-    this._menuComponent.setActiveItem(menuItem);
   }
 }
 

@@ -20,15 +20,15 @@ const getInfo = (description, photos) => {
 };
 
 class Point {
-  constructor(data) {
-    this.id = data[`id`];
-    this.type = getType(data[`type`]);
-    this.time = getTime(data[`date_from`], data[`date_to`]);
-    this.destination = data[`destination`][`name`];
-    this.destinationInfo = getInfo(data[`destination`][`description`], data[`destination`][`pictures`]);
-    this.price = data[`base_price`];
-    this.offers = data[`offers`];
-    this.isFavorite = data[`is_favorite`] || false;
+  constructor(pointData) {
+    this.id = pointData[`id`];
+    this.type = getType(pointData[`type`]);
+    this.time = getTime(pointData[`date_from`], pointData[`date_to`]);
+    this.destination = pointData[`destination`][`name`];
+    this.destinationInfo = getInfo(pointData[`destination`][`description`], pointData[`destination`][`pictures`]);
+    this.price = pointData[`base_price`];
+    this.offers = pointData[`offers`];
+    this.isFavorite = pointData[`is_favorite`] || false;
   }
 
   toRaw() {

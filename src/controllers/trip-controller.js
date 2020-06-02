@@ -4,12 +4,13 @@ import DaysListComponent from '../components/days-list.js';
 import DayComponent from '../components/day.js';
 import NoEventsComponent from "../components/no-events.js";
 import StatsComponent from '../components/statistics.js';
+import {FilterType} from "../mock/const.js";
 import {RenderPosition, render, remove} from '../utils/render.js';
 
 const DATE_FIRST_CHAR_INDEX = 4;
 const DATE_LAST_CHAR_INDEX = 15;
 
-const addNewEventButton = document.querySelector(`.trip-main__event-add-btn`);
+const addNewEventButtonElement = document.querySelector(`.trip-main__event-add-btn`);
 
 const sortEventsPerDay = (events) => {
   const eventsCopy = events.slice();
@@ -37,8 +38,8 @@ const renderEventsPerDay = (day, eventsList, onDataChange, onViewChange, destina
 
 const renderDefaultSort = (sortedEvents, daysListElement, onDataChange, onViewChange, destinations, offers) => {
   let controllers = [];
-  sortedEvents.slice().forEach((day) => {
-    const dayComponent = new DayComponent(day.date, SortType.DEFAULT);
+  sortedEvents.slice().forEach((day, index) => {
+    const dayComponent = new DayComponent(day.date, SortType.DEFAULT, index);
     const dayElement = dayComponent.getElement();
     const tripDayEventsList = dayElement.querySelector(`.trip-events__list`);
     render(daysListElement, dayComponent, RenderPosition.BEFORE_END);
@@ -48,8 +49,8 @@ const renderDefaultSort = (sortedEvents, daysListElement, onDataChange, onViewCh
 };
 
 const renderUserSortedEvents = (sortedEvents, daysListElement, sortType, onDataChange, onViewChange, destinations, offers) => {
-  return sortedEvents.slice().map((event) => {
-    const dayComponent = new DayComponent(event.time.start, sortType);
+  return sortedEvents.slice().map((event, index) => {
+    const dayComponent = new DayComponent(event.time.start, sortType, index);
     const dayElement = dayComponent.getElement();
     const tripDay = dayElement.querySelector(`.trip-events__list`);
     render(daysListElement, dayComponent, RenderPosition.BEFORE_END);
@@ -94,16 +95,24 @@ class TripController {
   }
 
   createEvent() {
-    addNewEventButton.disabled = true;
     if (this._creatingEvent) {
       return;
     }
 
+    addNewEventButtonElement.disabled = true;
     this._onViewChange();
+    remove(this._sortComponent);
+
+    if ((this._sortComponent.getSortType() !== SortType.DEFAULT) || (this._pointsModel.getActiveFilterType() !== FilterType.EVERYTHING)) {
+      this._removePoints();
+      this._pointsModel.setFilter(FilterType.EVERYTHING);
+    }
 
     this._creatingEvent = new PointController(this._container, this._onDataChange, this._onViewChange, this._pointsModel.getDestinations(), this._pointsModel.getOffers());
     this._creatingEvent.render(EmptyPoint, PointControllerMode.ADDING);
     this._showedPointControllers.push(this._creatingEvent);
+
+    render(this._container, this._sortComponent, RenderPosition.AFTER_BEGIN);
   }
 
   getSortedEvents() {
@@ -192,11 +201,18 @@ class TripController {
       this._statsComponent.rerender(this._pointsModel.getPoints());
     } else {
       this._updatePoints();
+      this._headerController.rerender(this._sortedEvents);
     }
   }
 
   _onViewChange() {
+    if (this._creatingEvent) {
+      this._creatingEvent.destroy();
+      this._creatingEvent = null;
+      this._showedPointControllers.pop();
+    }
     this._showedPointControllers.forEach((pointController) => pointController.setDefaultView());
+    addNewEventButtonElement.disabled = false;
   }
 
   _removePoints() {
@@ -225,12 +241,12 @@ class TripController {
       this._showedPointControllers = renderEvents(userSortedEvents, daysListElement, sort, this._onDataChange, this._onViewChange, this._pointsModel.getDestinations(), this._pointsModel.getOffers());
     });
     this._creatingEvent = null;
-    addNewEventButton.disabled = false;
+    addNewEventButtonElement.disabled = false;
   }
 
   _sortEvents(sortType = SortType.DEFAULT) {
     let sortedEvents = [];
-    const pointsCopy = this._pointsModel.getPoints().slice();
+    let pointsCopy = this._pointsModel.getPoints().slice();
 
     switch (sortType) {
       case SortType.TIME:

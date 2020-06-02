@@ -113,7 +113,6 @@ const getCloseButtonMarkup = () => {
 };
 
 const getEventEditMarkup = (event, mode, externalData, destinations, offers) => {
-  // console.dir(event)
   const eventType = (event.type.type !== `Check`) ? event.type.type : `Check-in`;
   const title = (event.type.group === `Activity`) ? `${eventType} in` : `${eventType} to`;
 
@@ -124,7 +123,12 @@ const getEventEditMarkup = (event, mode, externalData, destinations, offers) => 
   let eventInfo = ``;
   let destinationPhotosMarkup = ``;
 
-  const possibleOffers = offers.find((offer) => offer.type === event.type.type.toLowerCase());
+  const possibleOffers = offers.slice().find((offer) => {
+    return offer.type === event.type.type.toLowerCase();
+  });
+  // console.dir(possibleOffers.offers)
+  // console.dir(event.offers)
+  // console.dir(`-----------`)
   const offersMarkup = possibleOffers ? getOffersMarkup(possibleOffers.offers, event.offers) : ``;
 
   const isFavorite = event.isFavorite ? `checked` : ``;
@@ -245,26 +249,6 @@ class Edit extends AbstractSmartComponent {
     super.removeElement();
   }
 
-  _parseSubmitData() {
-    return {
-      price: this._element.querySelector(`.event__input--price`).value,
-      destination: this._element.querySelector(`.event__input--destination`).value,
-      timeStart: new Date(this._element.querySelectorAll(`.event__input--time`)[0].value),
-      timeEnd: new Date(this._element.querySelectorAll(`.event__input--time`)[2].value),
-      isFavorite: (this._element.querySelector(`.event__favorite-checkbox`)) ? this._element.querySelector(`.event__favorite-checkbox`).checked : false
-    };
-  }
-
-  _restoreSubmitData(formData) {
-    const {price, destination, timeStart, timeEnd, isFavorite} = formData;
-    this._element.querySelector(`.event__input--price`).value = price;
-    this._element.querySelector(`.event__input--destination`).value = destination;
-    if (this._element.querySelector(`.event__favorite-checkbox`)) {
-      this._element.querySelector(`.event__favorite-checkbox`).checked = isFavorite;
-    }
-    return {timeStart, timeEnd};
-  }
-
   rerender() {
     const formData = this._parseSubmitData();
     super.rerender();
@@ -339,17 +323,39 @@ class Edit extends AbstractSmartComponent {
     });
   }
 
+  _parseSubmitData() {
+    return {
+      price: this._element.querySelector(`.event__input--price`).value,
+      destination: this._element.querySelector(`.event__input--destination`).value,
+      timeStart: new Date(this._element.querySelectorAll(`.event__input--time`)[0].value),
+      timeEnd: new Date(this._element.querySelectorAll(`.event__input--time`)[2].value),
+      isFavorite: (this._element.querySelector(`.event__favorite-checkbox`)) ? this._element.querySelector(`.event__favorite-checkbox`).checked : false,
+      offers: this._event.offers
+    };
+  }
+
+  _restoreSubmitData(formData) {
+    const {price, destination, timeStart, timeEnd, isFavorite} = formData;
+    this._element.querySelector(`.event__input--price`).value = price;
+    this._element.querySelector(`.event__input--destination`).value = destination;
+    if (this._element.querySelector(`.event__favorite-checkbox`)) {
+      this._element.querySelector(`.event__favorite-checkbox`).checked = isFavorite;
+    }
+    return {timeStart, timeEnd};
+  }
+
   _subscribeOnEvents() {
     const priceElement = this._element.querySelector(`.event__input--price`);
     const destinationElement = this._element.querySelector(`.event__input--destination`);
-    let destinations = this._destinations.map((destination) => destination.name);
+    let destinationsElement = this._destinations.map((destination) => destination.name);
+    const offersSectionElement = this._element.querySelector(`.event__section--offers`);
 
     this._element.querySelectorAll(`.event__type-input`).forEach((evtType) => {
       evtType.addEventListener(`change`, (evt) => {
         const type = evt.target.value;
         const newType = {};
         newType.type = type[0].toUpperCase() + type.slice(1);
-        newType.group = EVENT_TYPES.filter((it) => it.type === newType.type)[0].group;
+        newType.group = EVENT_TYPES.filter((eventType) => eventType.type === newType.type)[0].group;
         this._event.type = newType;
         this.rerender();
       });
@@ -357,7 +363,7 @@ class Edit extends AbstractSmartComponent {
 
     destinationElement.addEventListener(`input`, (evt) => {
       evt.target.setCustomValidity(`Please choose a city from the list`);
-      if (destinations.includes(evt.target.value)) {
+      if (destinationsElement.includes(evt.target.value)) {
         this._event.destination = evt.target.value;
         this._event.destinationInfo.info = this._destinations.find((destination) => destination.name === this._event.destination).description;
         evt.target.setCustomValidity(``);
@@ -372,6 +378,24 @@ class Edit extends AbstractSmartComponent {
         priceElement.setCustomValidity(``);
       }
     });
+
+    if (offersSectionElement) {
+      const offerElements = offersSectionElement.querySelectorAll(`.event__offer-checkbox`);
+      Array.from(offerElements).forEach((offerElement) => {
+        offerElement.addEventListener(`click`, (evt) => {
+          const offerTitle = evt.target.nextElementSibling.children[0].innerText;
+          const offerPrice = parseFloat(evt.target.nextElementSibling.children[1].innerText);
+
+          if (evt.target.checked) {
+            this._event.offers.push({title: offerTitle,
+              price: offerPrice});
+          } else {
+            const index = this._event.offers.findIndex((offer) => offer.title === offerTitle);
+            this._event.offers.splice(index, 1);
+          }
+        });
+      });
+    }
   }
 }
 

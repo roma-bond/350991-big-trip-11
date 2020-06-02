@@ -40,12 +40,14 @@ const parseFormData = (form) => {
     "is_favorite": form.querySelector(`.event__favorite-checkbox`) ? form.querySelector(`.event__favorite-checkbox`).checked : false,
     "base_price": form.querySelector(`.event__input--price`).value,
     "type": eventType,
-    "offers": Array.from(form.querySelectorAll(`.event__offer-selector`)).map((offerElement) => {
-      return {
-        title: offerElement.querySelector(`.event__offer-title`).innerText,
-        price: offerElement.querySelector(`.event__offer-price`).innerText
-      };
-    }),
+    "offers": Array.from(form.querySelectorAll(`.event__offer-selector`))
+      .filter((offerElement) => offerElement.querySelector(`.event__offer-checkbox`).checked)
+      .map((offerElement) => {
+        return {
+          title: offerElement.querySelector(`.event__offer-title`).innerText,
+          price: offerElement.querySelector(`.event__offer-price`).innerText
+        };
+      }),
     "destination": {
       "description": form.querySelector(`.event__destination-description`).innerText,
       "name": form.querySelector(`.event__input--destination`).value,

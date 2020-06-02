@@ -5,6 +5,9 @@ const TIME_FIRST_CHAR_INDEX = 16;
 const TIME_LAST_CHAR_INDEX = 21;
 
 const getOffersMarkup = (offers) => {
+  if (offers.length > 3) {
+    offers = offers.slice(0, 3);
+  }
   return offers
     .map((offer) => {
       return (
@@ -77,8 +80,8 @@ class Event extends AbstractComponent {
   }
 
   setOpenButtonClickHandler(handler) {
-    const openButton = this.getElement().querySelector(`.event__rollup-btn`);
-    openButton.addEventListener(`click`, handler);
+    const openButtonElement = this.getElement().querySelector(`.event__rollup-btn`);
+    openButtonElement.addEventListener(`click`, handler);
   }
 }
 

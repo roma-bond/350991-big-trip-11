@@ -1,6 +1,6 @@
 import FilterComponent from "../components/filters.js";
 import {FilterType} from "../mock/const.js";
-import {render, RenderPosition} from "../utils/render.js";
+import {remove, render, RenderPosition} from "../utils/render.js";
 
 class FilterController {
   constructor(container, pointsModel) {
@@ -18,11 +18,15 @@ class FilterController {
 
   render() {
     const container = this._container;
-    this._filterComponent = new FilterComponent();
+    this._filterComponent = new FilterComponent(this._pointsModel.getActiveFilterType());
 
     this._filterComponent.setFilterChangeHandler(this._onFilterChange);
 
-    render(container, this._filterComponent, RenderPosition.BEFORE_END);
+    return render(container, this._filterComponent, RenderPosition.BEFORE_END);
+  }
+
+  removeFilterComponent() {
+    remove(this._filterComponent);
   }
 
   _onFilterChange(filterType) {
