@@ -112,6 +112,21 @@ const getCloseButtonMarkup = () => {
   );
 };
 
+const getDestinationMarkup = (eventInfo, photosMarkup) => {
+  return (
+    `<section class="event__section  event__section--destination">
+      <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+      <p class="event__destination-description">${eventInfo}</p>
+
+      <div class="event__photos-container">
+        <div class="event__photos-tape">
+          ${photosMarkup}
+        </div>
+      </div>
+    </section>`
+  );
+};
+
 const getEventEditMarkup = (event, mode, externalData, destinations, offers) => {
   const eventType = (event.type.type !== `Check`) ? event.type.type : `Check-in`;
   const title = (event.type.group === `Activity`) ? `${eventType} in` : `${eventType} to`;
@@ -122,13 +137,11 @@ const getEventEditMarkup = (event, mode, externalData, destinations, offers) => 
   let currentDestination = ``;
   let eventInfo = ``;
   let destinationPhotosMarkup = ``;
+  let destinationMarkup = ``;
 
   const possibleOffers = offers.slice().find((offer) => {
     return offer.type === event.type.type.toLowerCase();
   });
-  // console.dir(possibleOffers.offers)
-  // console.dir(event.offers)
-  // console.dir(`-----------`)
   const offersMarkup = possibleOffers ? getOffersMarkup(possibleOffers.offers, event.offers) : ``;
 
   const isFavorite = event.isFavorite ? `checked` : ``;
@@ -144,6 +157,7 @@ const getEventEditMarkup = (event, mode, externalData, destinations, offers) => 
     });
     eventInfo = currentDestination ? currentDestination.description : ``;
     destinationPhotosMarkup = (currentDestination && currentDestination.pictures) ? getDestinationPhotosMarkup(currentDestination.pictures) : ``;
+    destinationMarkup = getDestinationMarkup(eventInfo, destinationPhotosMarkup);
   }
 
   return (
@@ -199,16 +213,7 @@ const getEventEditMarkup = (event, mode, externalData, destinations, offers) => 
       </header>
       <section class="event__details">
         ${offersMarkup}
-        <section class="event__section  event__section--destination">
-          <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${eventInfo}.</p>
-
-          <div class="event__photos-container">
-            <div class="event__photos-tape">
-              ${destinationPhotosMarkup}
-            </div>
-          </div>
-        </section>
+        ${destinationMarkup}
       </section>
     </form>`
   );
@@ -235,6 +240,10 @@ class Edit extends AbstractSmartComponent {
     this._subscribeOnEvents();
   }
 
+  getTemplate() {
+    return getEventEditMarkup(this._event, this._mode, this._externalData, this._destinations, this._offers);
+  }
+
   removeElement() {
     if (this._flatpickrStart) {
       this._flatpickrStart.destroy();
@@ -254,10 +263,6 @@ class Edit extends AbstractSmartComponent {
     super.rerender();
     const {timeStart, timeEnd} = this._restoreSubmitData(formData);
     this._applyFlatpickr(timeStart, timeEnd);
-  }
-
-  getTemplate() {
-    return getEventEditMarkup(this._event, this._mode, this._externalData, this._destinations, this._offers);
   }
 
   recoveryListeners() {

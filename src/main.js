@@ -32,19 +32,14 @@ addEventButton.addEventListener(`click`, () => {
   tripController.createEvent();
 });
 
-api.getOffers()
-  .then((offers) => {
-    pointsModel.setOffers(offers);
-  });
-
-api.getDestinations()
-  .then((destinations) => {
-    pointsModel.setDestinations(destinations);
-  });
-
-api.getEvents()
-  .then((events) => {
-    pointsModel.setPoints(events);
-    tripController.renderTable();
-    headerController.render(tripController.getSortedEvents());
-  });
+Promise.all([
+  api.getOffers(),
+  api.getDestinations(),
+  api.getEvents()
+]).then(([offers, destinations, events]) => {
+  pointsModel.setOffers(offers);
+  pointsModel.setDestinations(destinations);
+  pointsModel.setPoints(events);
+  tripController.renderTable();
+  headerController.render(tripController.getSortedEvents());
+});

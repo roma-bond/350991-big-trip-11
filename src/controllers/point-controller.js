@@ -84,6 +84,7 @@ class PointController {
     this._mode = mode;
 
     this._editComponent = new EditComponent(eventCopy, this._mode, this._destinations, this._offers);
+
     this._eventComponent = new EventComponent(eventCopy);
 
     this._eventComponent.setOpenButtonClickHandler(() => {

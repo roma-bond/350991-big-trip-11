@@ -36,6 +36,12 @@ class HeaderController {
     this._menuComponent.setActiveItem(menuItem);
   }
 
+  _getChosenOffersTotalPrice(offers) {
+    return offers.reduce((total, offer) => {
+      return total + offer.price;
+    }, 0);
+  }
+
   _renderInfo(sortedEvents) {
     this._infoComponent = new InfoComponent(sortedEvents);
     const infoElement = this._infoComponent.getElement();
@@ -43,7 +49,7 @@ class HeaderController {
 
     const totalPrice = sortedEvents.reduce((sum, eventDay) => {
       return sum + eventDay.events.reduce((sumDay, event) => {
-        return sumDay + event.price;
+        return sumDay + event.price + this._getChosenOffersTotalPrice(event.offers);
       }, 0);
     }, 0);
 
